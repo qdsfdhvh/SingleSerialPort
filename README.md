@@ -3,39 +3,39 @@ Under Construction...
 **USE RS232**
 ````kotlin
 val serial = Rs232SerialPort(SerialPath.ttyS3, 9600)
-        serial.open(object : SerialPort.Callback {
-            override fun onSuccess() {
-                
-            }
+serial.open(object : SerialPort.Callback {
+    override fun onSuccess() {
+        
+    }
 
-            override fun onResult(bytes: ByteArray) {
-                
-            }
+    override fun onResult(bytes: ByteArray) {
+        
+    }
 
-            override fun onError(e: Throwable) {
-                
-            }
-        })
-        serial.send(byteArrayOf(1, 2, 3))
+    override fun onError(e: Throwable) {
+        
+    }
+})
+serial.send(byteArrayOf(1, 2, 3))
 ````
 **USB USB**
 ````kotlin
 UsbSerialService.addFilterDevice(11,  22)
-        val serial = UsbSerialPort(9600)
-        serial.open(object : SerialPort.Callback {
-            override fun onSuccess() {
+val serial = UsbSerialPort(9600)
+serial.open(object : SerialPort.Callback {
+    override fun onSuccess() {
 
-            }
+    }
 
-            override fun onResult(bytes: ByteArray) {
-                // in work thread
-            }
+    override fun onResult(bytes: ByteArray) {
+        // in work thread
+    }
 
-            override fun onError(e: Throwable) {
+    override fun onError(e: Throwable) {
 
-            }
-        })
-        serial.send(byteArrayOf(1, 2, 3))
+    }
+})
+serial.send(byteArrayOf(1, 2, 3))
 ````
 
 **USE Target**
