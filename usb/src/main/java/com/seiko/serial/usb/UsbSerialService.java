@@ -48,7 +48,8 @@ public class UsbSerialService extends Service {
                 switch (intent.getAction()) {
                     case ACTION_USB_PERMISSION:
                         Log.i(TAG, "ACTION_USB_PERMISSION");
-                        boolean granted = intent.getExtras().getBoolean(UsbManager.EXTRA_PERMISSION_GRANTED, false);
+                        boolean granted = intent.getExtras().getBoolean(
+                                UsbManager.EXTRA_PERMISSION_GRANTED, false);
                         if (granted) {
                             if (currentClient != null) {
                                 currentClient.checkDevice();
@@ -175,7 +176,8 @@ public class UsbSerialService extends Service {
      * 请求Usb权限
      */
     void requestUserPermission(UsbDevice device) {
-        PendingIntent mPendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+        PendingIntent mPendingIntent = PendingIntent.getBroadcast(this, 0,
+                new Intent(ACTION_USB_PERMISSION), 0);
         usbManager.requestPermission(device, mPendingIntent);
     }
 
@@ -216,9 +218,9 @@ public class UsbSerialService extends Service {
                 return false;
             }
         }
-        return deviceVID != 0x1d6b
-                && (devicePID != 0x0001 && devicePID != 0x0002 && devicePID != 0x0003)
-                && (devicePID != 1250 && devicePID != 5140);
+        return deviceVID != 0x1d6b && (devicePID != 0x0001
+                && devicePID != 0x0002
+                && devicePID != 0x0003);
     }
 
     private static class Holder {

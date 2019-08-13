@@ -27,6 +27,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':target')
     implementation project(':rs232')
+    implementation project(':usb')
 
     implementation deps.support.appcompat
     implementation deps.support.constraintLayout
