@@ -1,6 +1,6 @@
 def versions = [
         /* android */
-        'androidPlugin'    : '3.4.0',
+        'androidPlugin'    : '3.5.0-rc03',
         'arch'             : '1.1.1',
         /* support */
         'support'          : '28.0.0',
@@ -65,8 +65,9 @@ ext.deps = deps
  *                          Build Version                          *
  *******************************************************************/
 def buildVersions = [
-        'minSdk'         : 15,
-        'targetSdk'      : 28,
+        'minSdk'         : 19,
+        'targetSdk'      : 29,
+        'compileSdk'     : 29,
         'buildTools'     : "29.0.0",
 
         'sourceCompat'   : JavaVersion.VERSION_1_8,
@@ -82,5 +83,6 @@ static def addRepos(RepositoryHandler handler) {
     handler.jcenter()
     handler.mavenCentral()
     handler.maven { url "https://jitpack.io" }
+//    handler.maven { url "https://dl.bintray.com/qdsfdhvh/maven" }
 }
 ext.addRepos = this.&addRepos

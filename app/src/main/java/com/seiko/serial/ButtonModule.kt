@@ -1,5 +1,6 @@
 package com.seiko.serial
 
+import android.util.Log
 import com.seiko.serial.target.SerialModule
 import com.seiko.serial.target.Utils
 import io.reactivex.Observable
@@ -105,7 +106,7 @@ class ButtonModule: SerialModule {
                     readM(data.address).singlePost()
                 }
             }, { error ->
-
+                Log.e("ButtonModel", "Warn.", error)
             })
     }
 

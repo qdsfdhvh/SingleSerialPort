@@ -1,2 +1,7 @@
-include ':app', ':core', ':modbus', ':rs232', ':usb', ':target'
+include ':app',
+        ':serial-core',
+        ':serial-modbus',
+        ':serial-rs232',
+        ':serial-usb',
+        ':serial-target'
 rootProject.name='SingleSerialPort'

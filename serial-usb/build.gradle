@@ -1,0 +1,25 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion buildVersions.targetSdk
+    defaultConfig {
+        minSdkVersion buildVersions.minSdk
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    compileOptions {
+        sourceCompatibility buildVersions.sourceCompat
+        targetCompatibility buildVersions.targetCompat
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    api 'com.github.felHR85:UsbSerial:6.0.1'
+    api project(':serial-core')
+    implementation deps.kotlin.stdlib
+}
+
+apply from: rootProject.file('gradle/bintray.gradle')

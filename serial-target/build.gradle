@@ -1,0 +1,26 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion buildVersions.targetSdk
+    defaultConfig {
+        minSdkVersion buildVersions.minSdk
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    compileOptions {
+        sourceCompatibility buildVersions.sourceCompat
+        targetCompatibility buildVersions.targetCompat
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    api project(':serial-core')
+    api project(':serial-modbus')
+    implementation deps.reactivex.rxJava
+    implementation deps.kotlin.stdlib
+}
+
+apply from: rootProject.file('gradle/bintray.gradle')

@@ -1,0 +1,12 @@
+apply plugin: 'kotlin'
+apply plugin: 'java-library'
+
+dependencies {
+    implementation deps.kotlin.stdlib
+    implementation deps.support.annotations
+}
+
+sourceCompatibility = buildVersions.sourceCompat
+targetCompatibility = buildVersions.targetCompat
+
+apply from: rootProject.file('gradle/bintray.gradle')

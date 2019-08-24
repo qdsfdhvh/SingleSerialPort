@@ -4,10 +4,9 @@ buildscript {
     dependencies {
         classpath deps.android.gradle_plugin
         classpath deps.kotlin.gradle_plugin
-    }
-    repositories {
-        addRepos(repositories)
-        google()
+//        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+//        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+        classpath 'com.novoda:bintray-release:0.9.1'
     }
 }
 
@@ -18,3 +17,8 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+//tasks.getByPath(":serial-modbus:androidJavadocs").enabled = false
+//tasks.getByPath(":serial-rs232:androidJavadocs").enabled = false
+//tasks.getByPath(":serial-target:androidJavadocs").enabled = false
+//tasks.getByPath(":serial-usb:androidJavadocs").enabled = false

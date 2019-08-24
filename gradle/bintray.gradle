@@ -1,0 +1,19 @@
+apply plugin: 'com.novoda.bintray-release'
+
+//Properties properties = new Properties()
+//if (project.rootProject.file('local.properties').exists()) {
+//    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+//}
+
+// ./gradlew clean build bintrayUpload -PbintrayUser=bintray.user -PbintrayKey=bintray.apikey -PdryRun=false -x releaseAndroidJavadocs
+publish {
+    artifactId = POM_ARTIFACT_ID
+    userOrg = POM_DEVELOPER_ID
+    groupId = GROUP
+    uploadName = POM_PACKAGE_NAME
+    publishVersion = VERSION_NAME
+    desc = POM_DESCRIPTION
+    website = POM_SCM_URL
+    licences = ['Apache-2.0']
+    dryRun = false
+}

@@ -1,19 +1,21 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.0"
+    compileSdkVersion buildVersions.compileSdk
+    buildToolsVersion buildVersions.buildTools
     defaultConfig {
         applicationId "com.seiko.serial"
-        minSdkVersion 19
-        targetSdkVersion 29
+        minSdkVersion buildVersions.minSdk
+        targetSdkVersion buildVersions.targetSdk
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    compileOptions {
+        sourceCompatibility buildVersions.sourceCompat
+        targetCompatibility buildVersions.targetCompat
     }
     buildTypes {
         release {
@@ -25,9 +27,13 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':target')
-    implementation project(':rs232')
-    implementation project(':usb')
+    implementation project(':serial-target')
+    implementation project(':serial-rs232')
+    implementation project(':serial-usb')
+
+//    implementation 'com.seiko.serial:serial-rs232:0.0.4'
+//    implementation 'com.seiko.serial:serial-usb:0.0.4'
+//    implementation 'com.seiko.serial:serial-target:0.0.4'
 
     implementation deps.support.appcompat
     implementation deps.support.constraintLayout

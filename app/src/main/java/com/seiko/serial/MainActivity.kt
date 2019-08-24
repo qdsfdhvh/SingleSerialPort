@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import com.seiko.serial.core.SerialPort
 import com.seiko.serial.modbus.modBusByteArray
-import com.seiko.serial.rs232.Rs232SerialPort
-import com.seiko.serial.rs232.SerialPath
+import com.seiko.serial.rs232.RS232SerialPort
+import com.seiko.serial.rs232.SerialPortPath
 import com.seiko.serial.target.reactive.data.BoxIntArray
 import com.seiko.serial.target.reactive.data.BoxIntValue
 import com.seiko.serial.target.reactive.observable
@@ -20,7 +20,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val target = Rs232SerialPort(SerialPath.ttyS2, 115200).target(debug = true)
+    private val target = RS232SerialPort(SerialPortPath.ttyS2, 115200).target(debug = true)
 
     private val disposables = CompositeDisposable()
 
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun useRs232() {
-        val serial = Rs232SerialPort(SerialPath.ttyS3, 9600)
+        val serial = RS232SerialPort(SerialPortPath.ttyS3, 9600)
         serial.open(object : SerialPort.Callback {
             override fun onSuccess() {
 
