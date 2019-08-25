@@ -7,9 +7,9 @@ import io.reactivex.Observable
 import io.reactivex.internal.operators.flowable.FlowableCreate
 import io.reactivex.internal.operators.observable.ObservableCreate
 
-fun SerialPort.target(debug: Boolean = false): SerialModule.Target = SerialTarget(this, debug)
+fun SerialPort.toTarget(debug: Boolean = false): SerialTarget = SerialTarget(this, debug)
 
-//fun SerialPort.observable(): Observable<ByteArray> {
+//fun SerialPort.toObservable(): Observable<ByteArray> {
 //    return ObservableCreate { emitter ->
 //        emitter.setCancellable(this::close)
 //        open(object: SerialPort.Callback {

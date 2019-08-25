@@ -67,10 +67,6 @@ class IntArrayModuleObservable(
 
             }
 
-//            override fun filter(bytes: ByteArray): Boolean {
-//                return array.filter(bytes)
-//            }
-
             override fun accept(bytes: ByteArray) {
                 if (array.filter(bytes) && array.decode(bytes)) {
                     observer?.onNext(array.getDecodeArray())

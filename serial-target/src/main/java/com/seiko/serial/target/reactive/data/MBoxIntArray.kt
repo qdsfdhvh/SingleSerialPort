@@ -1,31 +1,27 @@
 package com.seiko.serial.target.reactive.data
 
+import android.util.Log
+import com.seiko.serial.modbus.hexString
 import com.seiko.serial.target.Utils
 import kotlin.math.min
 
 /**
  * M地址的连续读取
  */
-open class MBoxIntArray: BoxIntArray {
+open class MBoxIntArray(data: BoxIntParam): BoxIntArray(data) {
 
-    constructor(address: Int, num: Int, len: Int = 2, sep: Int = len): super(
-        BoxIntParam(
-            address,
-            num,
-            len,
-            sep
-        )
-    )
+    constructor(address: Int, num: Int, len: Int = 2, sep: Int = len):
+            this(BoxIntParam(address, num, len, sep))
 
-    constructor(data: BoxIntParam): super(data)
-
-    private var bytesLen: Int = if (data.addressLen() % 8 == 0) data.addressLen() / 8 else data.addressLen() / 8 + 1
-
+    private var bytesLen: Int = if (data.addressLen() % 8 == 0)
+        data.addressLen() / 8 else data.addressLen() / 8 + 1
 
     override fun filter(bytes: ByteArray): Boolean {
-//        if (isDebug) Timber.d("Filter:${Arrays.toString(bytes)}")
-        return bytes[1].toInt() == 1
-                && bytes[2].toInt() and 0xFF == bytesLen
+        val bool = bytes[1].toInt() == 1 && bytes[2].toInt() and 0xFF == bytesLen
+        if (isDebug) {
+            Log.d(TAG, "Filter(${bytes.hexString()}) = $bool.")
+        }
+        return bool
     }
     /**
      * @param bytes 完整的modBus指令
@@ -33,7 +29,6 @@ open class MBoxIntArray: BoxIntArray {
     // [1, 1, 1, 48, 81, -100] num = [48], 00110000
     // [1, 1, 1, 0, 81, -120] num = [0]
     override fun decode(bytes: ByteArray): Boolean {
-//        if (isDebug) Timber.d("Decode-Bytes:${Arrays.toString(bytes)}")
         val bak = bytes.copyOfRange(3, 3 + bytesLen)
         val size = bak.size
         var i = 0
@@ -49,7 +44,10 @@ open class MBoxIntArray: BoxIntArray {
             }
             i++
         }
-//        if (isDebug) Timber.d("Decode-Array:${Arrays.toString(array)}")
+
+        if (isDebug) {
+            Log.d(TAG, "Decode Result:${array.contentToString()}.")
+        }
         return true
     }
 
@@ -69,5 +67,10 @@ open class MBoxIntArray: BoxIntArray {
     private fun Int.toBinary(): String {
         return Integer.toBinaryString((this and 0xFF) + 0x100).substring(1)
     }
+
+    companion object {
+        private const val TAG = "MBoxIntArray"
+    }
+
 
 }

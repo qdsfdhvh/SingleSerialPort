@@ -11,15 +11,16 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.util.Pair;
 
 import com.felhr.usbserial.UsbSerialDevice;
 import com.seiko.serial.core.SerialPort;
-import com.seiko.serial.core.SerialSetting;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,51 +34,78 @@ public class UsbSerialService extends Service {
     private static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
     private static final String ACTION_USB_DETACHED = "android.hardware.usb.action.USB_DEVICE_DETACHED";
 
+    static final String DEFAULT_CLIENTS = "DEFAULT";
+
     private UsbBinder binder = new UsbBinder();
 
     private UsbManager usbManager;
     private List<UsbDevice> deviceList;
-    private UsbClient currentClient;
+    private HashMap<String, UsbClient> usbClients;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent == null) return;
+            String action = intent.getAction();
+            if (action == null) return;
+
+            UsbDevice device;
+            UsbClient client;
 
             try {
-                switch (intent.getAction()) {
+                switch (action) {
                     case ACTION_USB_PERMISSION:
                         Log.i(TAG, "ACTION_USB_PERMISSION");
-                        boolean granted = intent.getExtras().getBoolean(
-                                UsbManager.EXTRA_PERMISSION_GRANTED, false);
-                        if (granted) {
-                            if (currentClient != null) {
-                                currentClient.checkDevice();
-                            }
+
+                        Bundle bundle = intent.getExtras();
+                        boolean granted;
+                        if (bundle != null) {
+                            granted = bundle.getBoolean(UsbManager.EXTRA_PERMISSION_GRANTED, false);
                         } else {
-                            if (currentClient != null) {
-                                currentClient.checkNextDevice();
+                            granted = false;
+                        }
+
+                        device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                        for (Map.Entry<String, UsbClient> entry : usbClients.entrySet()) {
+                            client = entry.getValue();
+                            if (client.isEqual(device)) {
+                                if (granted) {
+                                    if (client.notOpenDevice()) {
+                                        usbClients.remove(entry.getKey());
+                                    }
+                                } else {
+                                    client.checkNextDevice();
+                                }
+                                break;
                             }
                         }
-                        break;
+                        return;
                     case ACTION_USB_ATTACHED:
                         Log.i(TAG, "ACTION_USB_ATTACHED");
-                        UsbDevice device1 = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                        if (currentClient != null) {
-                            if (currentClient.isEmpty()) {
-                                currentClient.refreshCheckDevice();
-                            }
-                            else if (currentClient.isEqual(device1)) {
-                                currentClient.refreshCheckDevice();
+
+                        device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                        for (Map.Entry<String, UsbClient> entry : usbClients.entrySet()) {
+                            client = entry.getValue();
+                            if (client.getKey().equals(DEFAULT_CLIENTS) && client.isEqual(device)) {
+                                client.refreshCheckDevice();
+                            } else {
+                                if (client.notOpenDevice()) {
+                                    usbClients.remove(client.getKey());
+                                }
                             }
                         }
                         return;
                     case ACTION_USB_DETACHED:
                         Log.i(TAG, "ACTION_USB_DETACHED");
-                        UsbDevice device2 = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                        if (currentClient != null && currentClient.isEqual(device2)) {
-                            currentClient.detach();
+
+                        device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                        for (Map.Entry<String, UsbClient> entry : usbClients.entrySet()) {
+                            client = entry.getValue();
+                            if (client.isEqual(device)) {
+                                client.detach();
+                            }
                         }
+                        break;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -95,6 +123,7 @@ public class UsbSerialService extends Service {
         }
 
         deviceList = new ArrayList<>();
+        usbClients = new HashMap<>();
         readUsbDevices();
 
         IntentFilter filter = new IntentFilter();
@@ -111,13 +140,11 @@ public class UsbSerialService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(TAG, "onBind");
         return binder;
     }
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy");
         unregisterReceiver(receiver);
         super.onDestroy();
     }
@@ -127,25 +154,41 @@ public class UsbSerialService extends Service {
      ***************************************************************/
 
     class UsbBinder extends Binder {
-        void open(SerialSetting setting, SerialPort.Callback callback) {
-            currentClient = new UsbClient(UsbSerialService.this, setting, callback);
-            currentClient.checkDevice();
+        void open(UsbSerialSetting setting, SerialPort.Callback callback) {
+            String key = setting.getKey();
+            UsbClient client = new UsbClient(UsbSerialService.this, setting, callback);
+
+            if (key.equals(DEFAULT_CLIENTS)) {
+                // 遍历usb设备
+                if (!usbClients.containsKey(key) && client.checkDevice()) {
+                    usbClients.put(key, client);
+                }
+            } else {
+                // 尝试开启指定usb设备
+                UsbDevice device = getUsbDevice(setting.getVid(), setting.getPid());
+                if (!usbClients.containsKey(key) && client.openDevice(device)) {
+                    usbClients.put(key, client);
+                }
+            }
         }
 
-        void send(byte[] bytes) {
+        void send(String key, byte[] bytes) {
+            UsbClient currentClient = usbClients.get(key);
             if (currentClient != null) {
                 currentClient.sendBytes(bytes);
             }
         }
 
-        void close() {
+        void close(String key) {
+            UsbClient currentClient = usbClients.get(key);
             if (currentClient != null) {
                 currentClient.release();
-                currentClient = null;
+                usbClients.remove(key);
             }
         }
 
-        void setBaudRate(int baudRate) {
+        void setBaudRate(String key, int baudRate) {
+            UsbClient currentClient = usbClients.get(key);
             if (currentClient != null) {
                 currentClient.setBaudRate(baudRate);
             }
@@ -195,15 +238,33 @@ public class UsbSerialService extends Service {
     }
 
     /**
-     * 读取UsbDevices
+     * 尝试读取有效的UsbDevice
      */
     void readUsbDevices() {
         if (!deviceList.isEmpty()) deviceList.clear();
+        UsbDevice device;
         for (Map.Entry<String,UsbDevice> map : usbManager.getDeviceList().entrySet()) {
-            if (isUseDevice(map.getValue())) {
-                deviceList.add(map.getValue());
+            device = map.getValue();
+            if (isUseDevice(device)) {
+                deviceList.add(device);
             }
         }
+    }
+
+    /**
+     * @param vid usb版本id
+     * @param pid usb设备id
+     * @return 可能存在的usb设备
+     */
+    UsbDevice getUsbDevice(int vid, int pid) {
+        UsbDevice device;
+        for (Map.Entry<String,UsbDevice> map : usbManager.getDeviceList().entrySet()) {
+            device = map.getValue();
+            if (device.getVendorId() == vid && device.getProductId() == pid) {
+                return device;
+            }
+        }
+        return null;
     }
 
     /***************************************************************
@@ -218,9 +279,10 @@ public class UsbSerialService extends Service {
                 return false;
             }
         }
-        return deviceVID != 0x1d6b && (devicePID != 0x0001
-                && devicePID != 0x0002
-                && devicePID != 0x0003);
+        return true;
+//        return deviceVID != 0x1d6b && (devicePID != 0x0001
+//                && devicePID != 0x0002
+//                && devicePID != 0x0003);
     }
 
     private static class Holder {

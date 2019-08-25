@@ -12,16 +12,6 @@ import java.util.concurrent.atomic.AtomicLong
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
-/**
- * 此管理同于管理M地址，对M地址写入1，修改后改回0。
- * 已实现功能：
- * 1.开始/停止充绒。
- * 2.去皮。
- *
- *
- * PS: 1.目前只有去皮是PLC中转去改传感器才真正需要通过状态来确认是否修改成功，
- *       其他大多是直接修改PLC，除了通讯断开外基本都会成功。
- */
 class ButtonModule: SerialModule {
 
     private val deviceId: Byte = 1
@@ -285,10 +275,6 @@ class ButtonModule: SerialModule {
          */
         private const val MAX_WAIT_RECEIVE_TIME = 50L
 
-        /**
-         * 当前PLC的最大工步数量
-         */
-        private const val MAX_STEP_COUNT = 100
     }
 
 }

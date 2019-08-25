@@ -1,5 +1,7 @@
 package com.seiko.serial.target.reactive.data
 
+import android.util.Log
+import com.seiko.serial.modbus.hexString
 import com.seiko.serial.modbus.modBusInt
 import com.seiko.serial.target.Utils
 
@@ -31,8 +33,11 @@ open class BoxIntArray(protected val data: BoxIntParam) {
      * @param bytes 过滤的指令
      */
     open fun filter(bytes: ByteArray): Boolean {
-        return bytes[1].toInt() == 3
-                && bytes[2].toInt() and 0xFF == bytesLen
+        val bool =  bytes[1].toInt() == 3 && bytes[2].toInt() and 0xFF == bytesLen
+        if (isDebug) {
+            Log.d(TAG, "Filter(${bytes.hexString()}) = $bool.")
+        }
+        return bool
     }
 
     /**
@@ -42,6 +47,9 @@ open class BoxIntArray(protected val data: BoxIntParam) {
         for (i in 0 until data.num) {
             array[i] = bytes.copyOfRange(3 + data.sep * 2 * i,
                 3 + data.sep * 2 * i + data.len * 2).modBusInt()
+        }
+        if (isDebug) {
+            Log.d(TAG, "Decode Result:${array.contentToString()}.")
         }
         return true
     }
@@ -61,20 +69,10 @@ open class BoxIntArray(protected val data: BoxIntParam) {
      */
     open fun getStartAddress() = data.address
 
-//    /**
-//     * 字节长度
-//     */
-//    open fun getLen() = data.addressLen() * 2
-
     /**
      * 是否相同
      */
     open fun isEqual(num: Int) = data.num == num
-
-//    /**
-//     * 指令
-//     */
-//    open fun postCode() = 3
 
     /**
      * 更新起始地址
@@ -83,8 +81,7 @@ open class BoxIntArray(protected val data: BoxIntParam) {
         if (data.address == address) return
         data.address = address
         post = Utils.bind03Cmd(deviceId, address, data.addressLen())
-
-//        if(isDebug) Timber.d("更新地址：$address")
+        if(isDebug) Log.d(TAG, "Update Address：$address.")
     }
 
     /**
@@ -95,6 +92,7 @@ open class BoxIntArray(protected val data: BoxIntParam) {
         data.num = num
         notifyChange()
         bytesLen = data.addressLen() * 2
+        if (isDebug) Log.d(TAG, "Update Num: $num.")
     }
 
     /**
@@ -103,6 +101,7 @@ open class BoxIntArray(protected val data: BoxIntParam) {
     private fun notifyChange() {
         array = bindIntArray()
         post = bindPostCode()
+        if (isDebug) Log.d(TAG, "Notify PostArray: ${post.hexString()}.")
     }
 
     protected open fun bindIntArray(): IntArray {
@@ -118,6 +117,10 @@ open class BoxIntArray(protected val data: BoxIntParam) {
      * 扩展参数
      */
     var isDebug = false            // 是否调试
+
+    companion object {
+        private const val TAG = "BoxIntArray"
+    }
 
 
 }

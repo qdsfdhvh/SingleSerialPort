@@ -12,11 +12,11 @@ import java.util.concurrent.TimeUnit
 /**
  * 连续地址持续读取
  */
-fun BoxIntArray.observable(target: SerialModule.Target,
-                           postTime: Long = 400L,
-                           debug: Boolean = false,
-                           unit: TimeUnit = TimeUnit.MILLISECONDS,
-                           scheduler: Scheduler = Schedulers.computation()): Observable<IntArray> {
+fun BoxIntArray.toObservable(target: SerialModule.Target,
+                             postTime: Long = 400L,
+                             debug: Boolean = false,
+                             unit: TimeUnit = TimeUnit.MILLISECONDS,
+                             scheduler: Scheduler = Schedulers.computation()): Observable<IntArray> {
     this.isDebug = debug
     return IntArrayModuleObservable(target, this, postTime, unit, scheduler)
 }
@@ -24,11 +24,11 @@ fun BoxIntArray.observable(target: SerialModule.Target,
 /**
  * 单个地址持续读取
  */
-fun BoxIntValue.observable(target: SerialModule.Target,
-                           postTime: Long = 400L,
-                           debug: Boolean = false,
-                           unit: TimeUnit = TimeUnit.MILLISECONDS,
-                           scheduler: Scheduler = Schedulers.computation()): Observable<Int> {
+fun BoxIntValue.toObservable(target: SerialModule.Target,
+                             postTime: Long = 400L,
+                             debug: Boolean = false,
+                             unit: TimeUnit = TimeUnit.MILLISECONDS,
+                             scheduler: Scheduler = Schedulers.computation()): Observable<Int> {
     this.isDebug = debug
     return IntValueModuleObservable(target, this, postTime, unit, scheduler)
 }
@@ -36,9 +36,9 @@ fun BoxIntValue.observable(target: SerialModule.Target,
 /**
  * 连续地址只读一次
  */
-fun BoxIntArray.single(target: SerialModule.Target,
-                       debug: Boolean = false,
-                       scheduler: Scheduler = Schedulers.computation()): Single<IntArray> {
+fun BoxIntArray.toSingle(target: SerialModule.Target,
+                         debug: Boolean = false,
+                         scheduler: Scheduler = Schedulers.computation()): Single<IntArray> {
     this.isDebug = debug
     return IntArrayModuleSingle(target, this, scheduler)
 }
@@ -46,9 +46,9 @@ fun BoxIntArray.single(target: SerialModule.Target,
 /**
  * 单个地址只读一次
  */
-fun BoxIntValue.single(target: SerialModule.Target,
-                       debug: Boolean = false,
-                       scheduler: Scheduler = Schedulers.computation()): Single<Int> {
+fun BoxIntValue.toSingle(target: SerialModule.Target,
+                         debug: Boolean = false,
+                         scheduler: Scheduler = Schedulers.computation()): Single<Int> {
     this.isDebug = debug
     return IntValueModuleSingle(target, this, scheduler)
 }

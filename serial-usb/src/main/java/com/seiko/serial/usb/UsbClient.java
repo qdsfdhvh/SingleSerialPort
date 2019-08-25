@@ -17,18 +17,23 @@ class UsbClient {
     private static final String TAG = "UsbClient";
 
     private UsbSerialService service;
-    private SerialSetting setting;
+    private UsbSerialSetting setting;
     private SerialPort.Callback callback;
 
-    UsbClient(UsbSerialService service, SerialSetting setting, SerialPort.Callback callback) {
+    private UsbSerialDevice currentSerial;
+    private UsbDevice currentDevice;
+
+    UsbClient(UsbSerialService service, UsbSerialSetting setting, SerialPort.Callback callback) {
         this.service = service;
         this.setting = setting;
         this.callback = callback;
     }
 
+    /***************************************************
+     *            按序依次尝试打开可用的串口设备           *
+     ***************************************************/
+
     private int currentIndex = 0;
-    private UsbSerialDevice currentSerial;
-    private UsbDevice currentDevice;
 
     /**
      * 重新检查
@@ -50,46 +55,73 @@ class UsbClient {
     /**
      * 检查当前UsbDevice
      */
-    void checkDevice() {
+    boolean checkDevice() {
         Log.d(TAG, "检查驱动：" + currentIndex);
-        UsbDevice device = service.getUsbDevice(currentIndex);
-        checkDevice(device);
-    }
+        currentDevice = service.getUsbDevice(currentIndex);
 
-    private void checkDevice(UsbDevice device) {
-        if (device == null) {
-            callback.onError(new RuntimeException("Bad to open usb serial。"));
-            return;
-        }
-
-        if (service.hasPermission(device)) {
-            Log.v(TAG, "开始加载驱动：" + currentIndex);
-            boolean bool = startOpenDevice(device);
-            if (!bool) {
-                currentIndex++;
-                checkDevice();
-            }
-        } else {
-            Log.v(TAG, "请求驱动权限：" + currentIndex);
-            service.requestUserPermission(device);
-        }
-    }
-
-    private boolean startOpenDevice(UsbDevice device) {
-        UsbSerialDevice serial = service.openDevice(device);
-        if (serial == null) {
+        //不存在有效的usb设备，返回错误。
+        if (currentDevice == null) {
+            callback.onError(new Exception("Bad to open usb serial。"));
             return false;
         }
 
-        Log.v(TAG, "获取Serial：" + currentIndex);
+        if (service.hasPermission(currentDevice)) {
+            Log.v(TAG, "开始加载驱动：" + currentIndex);
+            // 遍历不返回开启错误，返回无效设备错误。
+            if (!startOpenDevice(false)) {
+                currentIndex++;
+                return checkDevice();
+            }
+            return true;
+        } else {
+            Log.v(TAG, "请求驱动权限：" + currentIndex);
+            service.requestUserPermission(currentDevice);
+            return true;
+        }
+
+    }
+
+    /**
+     * 没有成功开启设备
+     * PS:成功不需要做什么，失败则需要做些事情，调整下bool输出。
+     */
+    boolean notOpenDevice() {
+        return !startOpenDevice(true);
+    }
+
+    /***************************************************
+     *            打开指定串口设备                       *
+     ***************************************************/
+
+    /**
+     * 开启指定Usb设备
+     */
+    boolean openDevice(UsbDevice device) {
+        currentDevice = device;
+        return startOpenDevice(true);
+    }
+
+    private boolean startOpenDevice(boolean callbackWarn) {
+        UsbDevice device = currentDevice;
+        if (device == null) {
+            if (callbackWarn) callback.onError(new Exception("UsbDevice is null."));
+            return false;
+        }
+
+        UsbSerialDevice serial = service.openDevice(device);
+        if (serial == null) {
+            if (callbackWarn) callback.onError(new Exception("UsbSerialDevice is null."));
+            return false;
+        }
+
         try {
             if (serial.open()) {
                 currentSerial = serial;
-                currentDevice = device;
 
                 /*
                  * 与lib中的值一样，直接导入即可
                  */
+                SerialSetting setting = this.setting.getSetting();
                 serial.setBaudRate(setting.getBaudRate());
                 serial.setDataBits(setting.getData());
                 serial.setStopBits(setting.getStop());
@@ -106,10 +138,11 @@ class UsbClient {
                 callback.onSuccess();
                 return true;
             }
-            return false;
+            if (callbackWarn) callback.onError(new Exception("Open UsbSerialDevice failed."));
         } catch (Exception e) {
-            return false;
+            if (callbackWarn) callback.onError(e);
         }
+        return false;
     }
 
     void sendBytes(byte[] bytes) {
@@ -146,8 +179,8 @@ class UsbClient {
                 && device.getProductId() == currentDevice.getProductId();
     }
 
-    boolean isEmpty() {
-        return currentDevice == null;
+    String getKey() {
+        return setting.getKey();
     }
 
 }

@@ -168,7 +168,6 @@ class SerialTarget(private val serial: SerialPort,
         if (debug) {
             val msg = "%s -> POST：%s".format(module.getTag(), bytes.hexString())
             Log.v(TAG, msg)
-            debugCallback?.onPost(bytes)
         }
 
         currentModule.set(module)
@@ -176,17 +175,6 @@ class SerialTarget(private val serial: SerialPort,
         iDecode.bytesOfSend(bytes)
 
         recycle() //注销
-
-        /*
-         * MAX_WAIT_RECEIVE_TIME以上没收到任何数据，清空队列，防止恢复通讯后，指令堆积过多而阻塞。
-         */
-//        if (debug) {
-//            val msg = "队列长度：%d, postTime=%d，receiveTime=%d".format(
-//                queue.size,
-//                lastPostTime.get(),
-//                lastReceiveTime.get())
-//            Log.d(TAG, msg)
-//        }
 
         if (lastPostTime.get() != 0L
             && System.currentTimeMillis().minus(lastReceiveTime.get()) > MAX_CONNECT_TIME) {
@@ -238,14 +226,12 @@ class SerialTarget(private val serial: SerialPort,
                     override fun onSuccess() {
                         isOpen.set(true)
                         onStart()
-    //                    callback?.onSuccess()
                     }
 
                     override fun onResult(bytes: ByteArray) {
                         if (debug) {
                             val msg = "RAW：%s".format(bytes.hexString())
                             Log.v(TAG, msg)
-                            debugCallback?.onRaw(bytes)
                         }
 
                         var bak = iDecode.check(bytes)
@@ -259,7 +245,6 @@ class SerialTarget(private val serial: SerialPort,
                         Log.e(TAG, "出现异常。", e)
                         isOpen.set(false)
                         onPause()
-    //                    callback?.onError()
                     }
                 })
             }, BackpressureStrategy.BUFFER)
@@ -267,7 +252,7 @@ class SerialTarget(private val serial: SerialPort,
             .filter { bytes ->
                 val bool = iFilter.isSafe(bytes)
                 if (!bool && debug) {
-                    Log.d(TAG, "过滤异常字节：${Arrays.toString(bytes)}")
+                    Log.d(TAG, "过滤异常字节：${bytes.contentToString()}")
                 }
                 return@filter bool
             }
@@ -279,7 +264,6 @@ class SerialTarget(private val serial: SerialPort,
                     if (debug) {
                         val msg = "%s -> READ：%s".format(module.getTag(), bytes.hexString())
                         Log.v(TAG, msg)
-                        debugCallback?.onRead(bytes)
                     }
                 }
             }, { error ->
@@ -292,22 +276,6 @@ class SerialTarget(private val serial: SerialPort,
             serialDisposable!!.dispose()
             serialDisposable = null
         }
-    }
-
-    /*******************************************
-     *                Callback                 *
-     *******************************************/
-
-    private var debugCallback: DebugCallback? = null
-
-    fun setDebugCallback(callback: DebugCallback?) {
-        this.debugCallback = callback
-    }
-
-    interface DebugCallback {
-        fun onPost(bytes: ByteArray)
-        fun onRaw(bytes: ByteArray)
-        fun onRead(bytes: ByteArray)
     }
 
     /*******************************************
@@ -331,14 +299,6 @@ class SerialTarget(private val serial: SerialPort,
          * 超过*ms时，认为连接断开，开始清理队列，防止阻塞。
          */
         private const val MAX_CONNECT_TIME = 1200L
-
-//        /**
-//         * 是否开启调试
-//         */
-//        private var DEBUG = false
-//        fun isDebug(bool: Boolean) {
-//            DEBUG = bool
-//        }
 
     }
 }
