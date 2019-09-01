@@ -1,7 +1,5 @@
 package com.seiko.serial.target
 
-import com.seiko.serial.core.SerialPort
-
 interface SerialModule {
 
     /**
@@ -9,15 +7,10 @@ interface SerialModule {
      */
     fun attach(target: Target?)
 
-//    /**
-//     * 过滤
-//     */
-//    fun filter(bytes: ByteArray): Boolean
-
     /**
      * 接收字节
      */
-    fun accept(bytes: ByteArray)
+    fun accept(bytes: ByteArray): Boolean
 
     /**
      * 优先级

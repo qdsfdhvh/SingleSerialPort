@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.collections.ArrayList
-import kotlin.math.roundToInt
 
 class ButtonModule: SerialModule {
 
@@ -122,8 +121,8 @@ class ButtonModule: SerialModule {
      * 修改ON成功后，会改变存于item中的bool状态，同上，一会读到ON都会发，直到成功。
      * 修改OFF成功后，因为存于item的bool状态已经变化，会此地址从list中删除，至此M地址修改完成，尝试下一个地址修改。
      */
-    override fun accept(bytes: ByteArray) {
-        if (vector.isEmpty()) return
+    override fun accept(bytes: ByteArray): Boolean {
+        if (vector.isEmpty()) return true
 
         when(bytes[1].toInt()) {
             1 -> {
@@ -175,6 +174,7 @@ class ButtonModule: SerialModule {
                 isWaitReceive.set(false)
             }
         }
+        return true
     }
 
     private fun ByteArray?.singlePost() {

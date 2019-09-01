@@ -7,11 +7,13 @@
 **1. 项目下app的build.gradle中依赖：**
 ````gradle
 // 使用RS232串口
-implementation 'com.seiko.serial:serial-rs232:0.0.5'
+implementation 'com.seiko.serial:serial-rs232:x.y.z'
 // 使用USB串口
-implementation 'com.seiko.serial:serial-usb:0.0.5'
+implementation 'com.seiko.serial:serial-usb:x.y.z'
 // 串口使用Rx封装
-implementation 'com.seiko.serial:serial-target:0.0.5'
+implementation 'com.seiko.serial:serial-target-rx:x.y.z'
+// 字节处理
+implementation 'com.seiko.serial:serial-modbus:x.y.z'
 ````
 
 **2.实现方式**

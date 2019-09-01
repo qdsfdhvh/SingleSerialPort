@@ -1,10 +1,15 @@
-buildscript {
+buildscript { 
+    ext.kotlin_version = '1.3.50'
+
     apply from: 'versions.gradle'
     addRepos(repositories)
     dependencies {
         classpath deps.android.gradle_plugin
         classpath deps.kotlin.gradle_plugin
         classpath 'com.novoda:bintray-release:0.9.1'
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" }
+    repositories {
+        google()
     }
 }
 

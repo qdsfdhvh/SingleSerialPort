@@ -3,7 +3,7 @@ package com.seiko.serial.modbus
 /**
  * 将字节数组装维相应的int
  */
-fun ByteArray.modBusInt(): Int {
+fun ByteArray.toModBusInt(): Int {
     return when(size) {
         4 -> ((this[2].toInt() and 0xFF shl 24)
                 or (this[3].toInt() and 0xFF shl 16)
@@ -17,11 +17,26 @@ fun ByteArray.modBusInt(): Int {
 }
 
 /**
+ * 获得此数组的crc16数值
+ * @return crc16数值
+ */
+fun ByteArray.getCrc16Int(): Int {
+    var crcReg = 0xFFFF
+    for (d in this) {
+        crcReg = (crcReg shr 8) xor (CRC16_TABLE[(crcReg xor d.toInt()) and 0xFF])
+    }
+    return crcReg
+}
+
+/**
  * 获得此数组的crc16数组
- * @return crc16
+ * @return crc16数组
  */
 fun ByteArray.getCrc16(): ByteArray {
-    return Crc16Utils.crc16ByteArray(this)
+    val crcReg = getCrc16Int()
+    return byteArrayOf(
+        (crcReg.toPositiveInt().toByte()),
+        (crcReg.toPositiveInt() shr 8).toByte())
 }
 
 /**
@@ -37,8 +52,20 @@ fun ByteArray.addCrc16(): ByteArray {
  * @param sep 间隔符
  * @return Hex
  */
-fun ByteArray.hexString(sep: String = " "): String {
-    return HexUtils.bytesToHexString(this, sep)
+fun ByteArray.toHexString(sep: Char = ' '): String {
+    val resultSize = size * 3 - 1
+    val result = CharArray(resultSize)
+    var c = 0
+    for (b in this) {
+        result[c++] = HEX_DIGIT_CHARS[b shr 4 and 0xf]
+        result[c++] = HEX_DIGIT_CHARS[b       and 0xf]
+        if (c == resultSize) {
+            break
+        } else {
+            result[c++] = sep
+        }
+    }
+    return String(result)
 }
 
 /**

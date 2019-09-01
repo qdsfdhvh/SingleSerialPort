@@ -1,4 +1,4 @@
-package com.seiko.serial.target.reactive.data
+package com.seiko.serial.target.data
 
 /**
  * PS:这里的数据都是以地址长度为准，而不是字节长度， 一个地址 = 2个字节

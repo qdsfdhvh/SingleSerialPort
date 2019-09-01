@@ -27,13 +27,13 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':serial-target')
     implementation project(':serial-rs232')
     implementation project(':serial-usb')
+    implementation project(':serial-target-rx')
 
-//    implementation 'com.seiko.serial:serial-rs232:0.0.4'
-//    implementation 'com.seiko.serial:serial-usb:0.0.4'
-//    implementation 'com.seiko.serial:serial-toTarget:0.0.4'
+//    implementation 'com.seiko.serial:serial-rs232:0.0.5'
+//    implementation 'com.seiko.serial:serial-usb:0.0.5'
+//    implementation 'com.seiko.serial:serial-target:0.0.5'
 
     implementation deps.support.appcompat
     implementation deps.support.constraintLayout

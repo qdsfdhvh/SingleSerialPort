@@ -5,7 +5,7 @@ package com.seiko.serial.modbus
  * @param size 需要转换成多长的数组
  * @return ModBus数组
  */
-fun Int.modBusByteArray(size: Int = 2): ByteArray {
+fun Int.toModBusByteArray(size: Int = 2): ByteArray {
     val bytes = ByteArray(size)
     when (size) {
         1 -> bytes[0] = this.toByte()
@@ -28,6 +28,7 @@ fun Int.modBusByteArray(size: Int = 2): ByteArray {
  * 将10进制数字转为二进制字符串
  * @return 二进制字符串
  */
-fun Int.toBinary(): String {
+@Suppress("NOTHING_TO_INLINE") // Syntactic sugar.
+inline fun Int.toBinary(): String {
     return Integer.toBinaryString((this and 0xFF) + 0x100).substring(1)
 }

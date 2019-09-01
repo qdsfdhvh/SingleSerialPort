@@ -3,7 +3,7 @@ package com.seiko.serial.rs232;
 /**
  * github [https://github.com/felHR85/UsbSerial/blob/master/usbserial/src/main/java/com/felhr/usbserial/AbstractWorkerThread.java]
  */
-abstract class AbstractWorkerThread extends Thread {
+abstract class AbsWorkerThread extends Thread {
 //    boolean firstTime = true;
     private volatile boolean keep = true;
     private volatile Thread workingThread;

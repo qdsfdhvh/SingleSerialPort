@@ -71,7 +71,7 @@ class RS232SerialPort(private val path: String,
         }
     }
 
-    private inner class SendThread(outputStream: OutputStream) : AbstractWorkerThread() {
+    private inner class SendThread(outputStream: OutputStream) : AbsWorkerThread() {
 
         private val sink: BufferedSink = outputStream.sink().buffer()
 
@@ -99,7 +99,7 @@ class RS232SerialPort(private val path: String,
     }
 
     private inner class ReadThread(inputStream: InputStream,
-                                   private val mCallback: SerialPort.Callback) : AbstractWorkerThread() {
+                                   private val mCallback: SerialPort.Callback) : AbsWorkerThread() {
 
         private val source: BufferedSource = inputStream.source().buffer()
 
@@ -111,10 +111,11 @@ class RS232SerialPort(private val path: String,
                     val data = serialBuffer.dataReceived
                     serialBuffer.clearReadBuffer()
                     mCallback.onResult(data)
-                } else {
-                    // 暂停一点时间，免得一直循环造成CPU占用率过高
-                    SystemClock.sleep(1)
                 }
+//                else {
+//                    // 暂停一点时间，免得一直循环造成CPU占用率过高
+//                    SystemClock.sleep(1)
+//                }
             } catch (e: IOException) {
                 e.printStackTrace()
             }

@@ -1,7 +1,7 @@
 package com.seiko.serial.target
 
 import com.seiko.serial.modbus.addCrc16
-import com.seiko.serial.modbus.modBusByteArray
+import com.seiko.serial.modbus.toModBusByteArray
 
 object Utils {
 
@@ -22,7 +22,11 @@ object Utils {
      * @end   结束地址
      */
     fun bind03CmdWithDim(deviceId: Byte, start: Int, end: Int): ByteArray {
-        return bind03Cmd(deviceId, start, Math.max(start, end) - start + 1)
+        return bind03Cmd(
+            deviceId,
+            start,
+            Math.max(start, end) - start + 1
+        )
     }
 
     /**
@@ -35,9 +39,9 @@ object Utils {
         // 从机地址、指令
         val hex1 = byteArrayOf(deviceId, 3)
         // 起始地址
-        val hex2 = address.modBusByteArray()
+        val hex2 = address.toModBusByteArray()
         // 读取长度
-        val hex3 = len.modBusByteArray()
+        val hex3 = len.toModBusByteArray()
         return (hex1 + hex2 + hex3).addCrc16()
     }
 
@@ -48,7 +52,7 @@ object Utils {
      * @num 写入的数据，int型10进制
      */
     fun bind06Cmd(deviceId: Byte, address: Int, num: Int): ByteArray {
-        return bind06Cmd(deviceId, address, num.modBusByteArray())
+        return bind06Cmd(deviceId, address, num.toModBusByteArray())
     }
 
     /**
@@ -61,7 +65,7 @@ object Utils {
         // 从机地址、指令
         val hex1 = byteArrayOf(deviceId, 6)
         // 地址
-        val hex2 = address.modBusByteArray()
+        val hex2 = address.toModBusByteArray()
         return (hex1 + hex2 + bytes).addCrc16()
     }
 
@@ -75,11 +79,11 @@ object Utils {
         // 从机地址、指令
         val hex1 = byteArrayOf(deviceId, 16)
         // 起始地址
-        val hex2 = address.modBusByteArray()
+        val hex2 = address.toModBusByteArray()
         // 地址长度
-        val hex3 = (bytes.size / 2).modBusByteArray()
+        val hex3 = (bytes.size / 2).toModBusByteArray()
         // 数据长度
-        val hex4 = (bytes.size).modBusByteArray()
+        val hex4 = (bytes.size).toModBusByteArray()
         return (hex1 + hex2 + hex3 + hex4 + bytes).addCrc16()
     }
 
@@ -93,7 +97,7 @@ object Utils {
         // 从机地址、指令
         val hex1 = byteArrayOf(deviceId, 5)
         // 起始地址
-        val hex2 = address.modBusByteArray()
+        val hex2 = address.toModBusByteArray()
         // 合: FF 00、关：00 00
         val hex3 = if (bool) byteArrayOf(-1, 0) else byteArrayOf(0, 0)
         return (hex1 + hex2 + hex3).addCrc16()
@@ -109,9 +113,9 @@ object Utils {
         // 从机地址、指令
         val hex1 = byteArrayOf(deviceId, 15)
         // 起始地址
-        val hex2 = address.modBusByteArray()
+        val hex2 = address.toModBusByteArray()
         // 读取长度
-        val hex3 = bools.size.modBusByteArray()
+        val hex3 = bools.size.toModBusByteArray()
         // 写入数据 8个一组
         val list = bools.split(8)
         val array = ByteArray(list.size * 2)
@@ -141,9 +145,9 @@ object Utils {
         // 从机地址、指令
         val hex1 = byteArrayOf(deviceId, 1)
         // 起始地址
-        val hex2 = address.modBusByteArray()
+        val hex2 = address.toModBusByteArray()
         // 读取长度
-        val hex3 = len.modBusByteArray()
+        val hex3 = len.toModBusByteArray()
         return (hex1 + hex2 + hex3).addCrc16()
     }
 
@@ -157,9 +161,9 @@ object Utils {
         // 从机地址、指令
         val hex1 = byteArrayOf(deviceId, 2)
         // 起始地址
-        val hex2 = address.modBusByteArray()
+        val hex2 = address.toModBusByteArray()
         // 读取长度
-        val hex3 = len.modBusByteArray()
+        val hex3 = len.toModBusByteArray()
         return (hex1 + hex2 + hex3).addCrc16()
     }
 

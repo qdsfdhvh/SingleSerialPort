@@ -1,8 +1,7 @@
-package com.seiko.serial.target.reactive
+package com.seiko.serial.target
 
-import com.seiko.serial.target.SerialModule
-import com.seiko.serial.target.reactive.data.BoxIntArray
-import com.seiko.serial.target.reactive.data.BoxIntValue
+import com.seiko.serial.target.data.BoxIntArray
+import com.seiko.serial.target.data.BoxIntValue
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.Single
@@ -13,11 +12,13 @@ import java.util.concurrent.TimeUnit
  * 连续地址持续读取
  */
 fun BoxIntArray.toObservable(target: SerialModule.Target,
-                             postTime: Long = 400L,
                              debug: Boolean = false,
+                             priority: Int = 99,
+                             postTime: Long = 400L,
                              unit: TimeUnit = TimeUnit.MILLISECONDS,
                              scheduler: Scheduler = Schedulers.computation()): Observable<IntArray> {
-    this.isDebug = debug
+    this.debug = debug
+    this.priority = priority
     return IntArrayModuleObservable(target, this, postTime, unit, scheduler)
 }
 
@@ -25,11 +26,13 @@ fun BoxIntArray.toObservable(target: SerialModule.Target,
  * 单个地址持续读取
  */
 fun BoxIntValue.toObservable(target: SerialModule.Target,
-                             postTime: Long = 400L,
                              debug: Boolean = false,
+                             priority: Int = 99,
+                             postTime: Long = 400L,
                              unit: TimeUnit = TimeUnit.MILLISECONDS,
                              scheduler: Scheduler = Schedulers.computation()): Observable<Int> {
-    this.isDebug = debug
+    this.debug = debug
+    this.priority = priority
     return IntValueModuleObservable(target, this, postTime, unit, scheduler)
 }
 
@@ -38,8 +41,10 @@ fun BoxIntValue.toObservable(target: SerialModule.Target,
  */
 fun BoxIntArray.toSingle(target: SerialModule.Target,
                          debug: Boolean = false,
+                         priority: Int = 99,
                          scheduler: Scheduler = Schedulers.computation()): Single<IntArray> {
-    this.isDebug = debug
+    this.debug = debug
+    this.priority = priority
     return IntArrayModuleSingle(target, this, scheduler)
 }
 
@@ -48,7 +53,9 @@ fun BoxIntArray.toSingle(target: SerialModule.Target,
  */
 fun BoxIntValue.toSingle(target: SerialModule.Target,
                          debug: Boolean = false,
+                         priority: Int = 99,
                          scheduler: Scheduler = Schedulers.computation()): Single<Int> {
-    this.isDebug = debug
+    this.debug = debug
+    this.priority = priority
     return IntValueModuleSingle(target, this, scheduler)
 }

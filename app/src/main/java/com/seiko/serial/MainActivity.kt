@@ -4,14 +4,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.seiko.serial.core.SerialPort
-import com.seiko.serial.modbus.modBusByteArray
+import com.seiko.serial.modbus.toModBusByteArray
 import com.seiko.serial.rs232.RS232SerialPort
 import com.seiko.serial.rs232.SerialPortPath
 import com.seiko.serial.target.SerialTarget
-import com.seiko.serial.target.reactive.data.BoxIntArray
-import com.seiko.serial.target.reactive.data.BoxIntValue
-import com.seiko.serial.target.reactive.toObservable
-import com.seiko.serial.target.reactive.toSingle
+import com.seiko.serial.target.data.BoxIntArray
+import com.seiko.serial.target.data.BoxIntValue
+import com.seiko.serial.target.toObservable
+import com.seiko.serial.target.toSingle
 import com.seiko.serial.target.toTarget
 import com.seiko.serial.usb.UsbSerialPort
 import com.seiko.serial.usb.UsbSerialService
@@ -112,7 +112,8 @@ class MainActivity : AppCompatActivity() {
             .addToDisposables()
 
         // 单个地址连续读取，线圈用MBoxIntValue
-        BoxIntValue(address = 123, len = 2).toObservable(target, postTime = 100)
+        BoxIntValue(address = 123, len = 2)
+            .toObservable(target, postTime = 100)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { intValue -> Log.d(TAG, intValue.toString()) }
             .addToDisposables()
@@ -129,12 +130,11 @@ class MainActivity : AppCompatActivity() {
             .subscribe { intValue -> Log.d(TAG, intValue.toString())  }
             .addToDisposables()
 
-
         // 写入地址
         val button = ButtonModule()
         target.addSerialModule(button)
         button.pull(12343, true)
-        button.pull(12234, 233.modBusByteArray(2))
+        button.pull(12234, 233.toModBusByteArray(2))
     }
 
     override fun onDestroy() {

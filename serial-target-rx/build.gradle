@@ -17,9 +17,8 @@ android {
 }
 
 dependencies {
-    api project(':serial-core')
-    api project(':serial-modbus')
-//    implementation deps.reactivex.rxJava
+    api project(':serial-target')
+    implementation deps.reactivex.rxJava
     implementation deps.kotlin.stdlib
 }
 

@@ -1,13 +1,15 @@
-package com.seiko.serial.target.reactive.data
+package com.seiko.serial.target.data
 
 import android.util.Log
-import com.seiko.serial.modbus.hexString
-import com.seiko.serial.modbus.modBusInt
+import com.seiko.serial.modbus.toHexString
+import com.seiko.serial.modbus.toModBusInt
 import com.seiko.serial.target.Utils
 
 /**
  * ModBus地址连续读取
  */
+private const val TAG = "BoxIntArray"
+
 open class BoxIntArray(protected val data: BoxIntParam) {
 
     constructor(address: Int, num: Int, len: Int = 2, sep: Int = len): this(BoxIntParam(address, num, len, sep))
@@ -21,7 +23,7 @@ open class BoxIntArray(protected val data: BoxIntParam) {
      * 数据集合
      */
     protected lateinit var array: IntArray
-    protected lateinit var post: ByteArray
+    private lateinit var post: ByteArray
 
     private var bytesLen: Int = data.addressLen() * 2
 
@@ -34,8 +36,8 @@ open class BoxIntArray(protected val data: BoxIntParam) {
      */
     open fun filter(bytes: ByteArray): Boolean {
         val bool =  bytes[1].toInt() == 3 && bytes[2].toInt() and 0xFF == bytesLen
-        if (isDebug) {
-            Log.d(TAG, "Filter(${bytes.hexString()}) = $bool.")
+        if (debug) {
+            Log.d(TAG, "Filter(${bytes.toHexString()}) = $bool.")
         }
         return bool
     }
@@ -46,9 +48,9 @@ open class BoxIntArray(protected val data: BoxIntParam) {
     open fun decode(bytes: ByteArray): Boolean {
         for (i in 0 until data.num) {
             array[i] = bytes.copyOfRange(3 + data.sep * 2 * i,
-                3 + data.sep * 2 * i + data.len * 2).modBusInt()
+                3 + data.sep * 2 * i + data.len * 2).toModBusInt()
         }
-        if (isDebug) {
+        if (debug) {
             Log.d(TAG, "Decode Result:${array.contentToString()}.")
         }
         return true
@@ -81,7 +83,7 @@ open class BoxIntArray(protected val data: BoxIntParam) {
         if (data.address == address) return
         data.address = address
         post = Utils.bind03Cmd(deviceId, address, data.addressLen())
-        if(isDebug) Log.d(TAG, "Update Address：$address.")
+        if(debug) Log.d(TAG, "Update Address：$address.")
     }
 
     /**
@@ -92,7 +94,7 @@ open class BoxIntArray(protected val data: BoxIntParam) {
         data.num = num
         notifyChange()
         bytesLen = data.addressLen() * 2
-        if (isDebug) Log.d(TAG, "Update Num: $num.")
+        if (debug) Log.d(TAG, "Update Num: $num.")
     }
 
     /**
@@ -101,7 +103,7 @@ open class BoxIntArray(protected val data: BoxIntParam) {
     private fun notifyChange() {
         array = bindIntArray()
         post = bindPostCode()
-        if (isDebug) Log.d(TAG, "Notify PostArray: ${post.hexString()}.")
+        if (debug) Log.d(TAG, "Notify PostArray: ${post.toHexString()}.")
     }
 
     protected open fun bindIntArray(): IntArray {
@@ -112,15 +114,10 @@ open class BoxIntArray(protected val data: BoxIntParam) {
         return Utils.bind03Cmd(deviceId, data.address, data.addressLen())
     }
 
-
     /**
      * 扩展参数
      */
-    var isDebug = false            // 是否调试
-
-    companion object {
-        private const val TAG = "BoxIntArray"
-    }
-
+    var debug = false            // 是否调试
+    var priority = 99            // 优先级
 
 }

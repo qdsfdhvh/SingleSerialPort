@@ -1,7 +1,7 @@
 package com.seiko.serial.target.decode
 
 import com.seiko.serial.modbus.indexOfArray
-import com.seiko.serial.modbus.modBusInt
+import com.seiko.serial.modbus.toModBusInt
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
@@ -83,7 +83,7 @@ class BreakageDecode : IDecode {
 
         when (bytes[1].toInt()) {
             3 -> {
-                val num = bytes.copyOfRange(4, 6).modBusInt() * 2
+                val num = bytes.copyOfRange(4, 6).toModBusInt() * 2
                 // 获得数据长度，数据长度 + 头长度 + 1(数据长度) + 校验位长度 = 一帧有效数组的长度
                 val len = num + 2 + 1 + 2
                 currentSize.set(len)
@@ -91,7 +91,7 @@ class BreakageDecode : IDecode {
             }
             1 -> {
                 // [1, 1, 1, 0, 81, -120]
-                val bak = bytes.copyOfRange(4, 6).modBusInt()
+                val bak = bytes.copyOfRange(4, 6).toModBusInt()
                 val num = if (bak % 8 == 0) bak / 8 else bak / 8 + 1
                 val len = num + 2 + 1 + 2
                 currentSize.set(len)

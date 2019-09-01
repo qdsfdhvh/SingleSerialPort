@@ -1,13 +1,15 @@
-package com.seiko.serial.target.reactive.data
+package com.seiko.serial.target.data
 
 import android.util.Log
-import com.seiko.serial.modbus.hexString
+import com.seiko.serial.modbus.toHexString
 import com.seiko.serial.target.Utils
 import kotlin.math.min
 
 /**
  * M地址的连续读取
  */
+private const val TAG = "MBoxIntArray"
+
 open class MBoxIntArray(data: BoxIntParam): BoxIntArray(data) {
 
     constructor(address: Int, num: Int, len: Int = 2, sep: Int = len):
@@ -18,8 +20,8 @@ open class MBoxIntArray(data: BoxIntParam): BoxIntArray(data) {
 
     override fun filter(bytes: ByteArray): Boolean {
         val bool = bytes[1].toInt() == 1 && bytes[2].toInt() and 0xFF == bytesLen
-        if (isDebug) {
-            Log.d(TAG, "Filter(${bytes.hexString()}) = $bool.")
+        if (debug) {
+            Log.d(TAG, "Filter(${bytes.toHexString()}) = $bool.")
         }
         return bool
     }
@@ -34,18 +36,18 @@ open class MBoxIntArray(data: BoxIntParam): BoxIntArray(data) {
         var i = 0
         while (i < size) {
             val str = bak[i].toInt().toBinary()
-//            if (isDebug) Timber.d("Decode-${i}_Binary:$str")
+//            if (debug) Timber.d("Decode-${i}_Binary:$str")
 
             val len = str.length
             for (j in 0 until min(len, array.size - i * len)) {
                 val char = str[len - 1 - j]  // 8 - 1 - j
                 array[i * len + j] = if (char == '0') 0 else 1
-//                if (isDebug) Timber.d("i = $i, j = $j, i * len + j = ${(i * len + j)}")
+//                if (debug) Timber.d("i = $i, j = $j, i * len + j = ${(i * len + j)}")
             }
             i++
         }
 
-        if (isDebug) {
+        if (debug) {
             Log.d(TAG, "Decode Result:${array.contentToString()}.")
         }
         return true
@@ -67,10 +69,4 @@ open class MBoxIntArray(data: BoxIntParam): BoxIntArray(data) {
     private fun Int.toBinary(): String {
         return Integer.toBinaryString((this and 0xFF) + 0x100).substring(1)
     }
-
-    companion object {
-        private const val TAG = "MBoxIntArray"
-    }
-
-
 }

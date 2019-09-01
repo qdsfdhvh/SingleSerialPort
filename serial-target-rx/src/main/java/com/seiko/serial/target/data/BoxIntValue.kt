@@ -1,21 +1,18 @@
-package com.seiko.serial.target.reactive.data
+package com.seiko.serial.target.data
 
-import com.seiko.serial.modbus.modBusInt
+import android.util.Log
+import com.seiko.serial.modbus.toHexString
+import com.seiko.serial.modbus.toModBusInt
 import com.seiko.serial.target.Utils
 
 /**
  * ModBus单个地址读取
  */
+private const val TAG = "BoxIntValue"
+
 open class BoxIntValue(protected val data: BoxIntParam) {
 
-    constructor(address: Int, len: Int = 1): this(
-        BoxIntParam(
-            address,
-            1,
-            len,
-            len
-        )
-    )
+    constructor(address: Int, len: Int = 1): this(BoxIntParam(address, 1, len, len))
 
     /**
      * 设备Id，充绒机的plc地址基本都是1，暂时不用适配
@@ -38,15 +35,21 @@ open class BoxIntValue(protected val data: BoxIntParam) {
      * @param bytes 过滤的指令
      */
     open fun filter(bytes: ByteArray): Boolean {
-        return bytes[1].toInt() == 3 && bytes[2].toInt() and 0xFF == bytesLen
+        val bool = bytes[1].toInt() == 3 && bytes[2].toInt() and 0xFF == bytesLen
+        if (debug) {
+            Log.d(TAG, "Filter(${bytes.toHexString()}) = $bool.")
+        }
+        return bool
     }
 
     /**
      * @param bytes 完整的modBus指令
      */
     open fun decode(bytes: ByteArray): Boolean {
-//        if (isDebug) Log.d(Arrays.toString(bytes))
-        value = bytes.copyOfRange(3, 3 + data.len * 2).modBusInt()
+        value = bytes.copyOfRange(3, 3 + data.len * 2).toModBusInt()
+        if (debug) {
+            Log.d(TAG, "Decode Result:$value.")
+        }
         return true
     }
 
@@ -77,19 +80,8 @@ open class BoxIntValue(protected val data: BoxIntParam) {
         if (data.address == address) return
         data.address = address
         post = Utils.bind03Cmd(deviceId, address, data.addressLen())
-
-//        if(isDebug) Timber.d("更新地址：$address")
+        if(debug) Log.d(TAG, "Update Address：$address.")
     }
-
-//    /**
-//     * 更新数量
-//     */
-//    open fun updateNum(num: Int) {
-//        if (isEqual(num)) return
-//        data.num = num
-//        notifyChange()
-//        bytesLen = data.addressLen() * 2
-//    }
 
     /**
      * 更新发送的指令与放入的Array
@@ -97,6 +89,7 @@ open class BoxIntValue(protected val data: BoxIntParam) {
     private fun notifyChange() {
         value = 0
         post = bindPostCode()
+        if (debug) Log.d(TAG, "Notify PostArray: ${post.toHexString()}.")
     }
 
     protected open fun bindPostCode(): ByteArray {
@@ -106,7 +99,7 @@ open class BoxIntValue(protected val data: BoxIntParam) {
     /**
      * 扩展参数
      */
-    var isDebug = false            // 是否调试
-
+    var debug = false            // 是否调试
+    var priority = 99            // 优先级
 
 }
