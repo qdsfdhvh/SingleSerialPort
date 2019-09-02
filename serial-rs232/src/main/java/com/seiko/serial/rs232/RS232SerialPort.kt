@@ -61,7 +61,6 @@ class RS232SerialPort(private val path: String,
     }
 
     override fun send(bytes: ByteArray) {
-//        sendThread?.send(bytes)
         serialBuffer.putWriteBuffer(bytes)
     }
 
@@ -84,6 +83,8 @@ class RS232SerialPort(private val path: String,
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
+            } else {
+                SystemClock.sleep(1)
             }
         }
 
@@ -111,11 +112,10 @@ class RS232SerialPort(private val path: String,
                     val data = serialBuffer.dataReceived
                     serialBuffer.clearReadBuffer()
                     mCallback.onResult(data)
+                } else {
+                    // 暂停一点时间，免得一直循环造成CPU占用率过高
+                    SystemClock.sleep(1)
                 }
-//                else {
-//                    // 暂停一点时间，免得一直循环造成CPU占用率过高
-//                    SystemClock.sleep(1)
-//                }
             } catch (e: IOException) {
                 e.printStackTrace()
             }

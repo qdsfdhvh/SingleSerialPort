@@ -1,5 +1,8 @@
 package com.seiko.serial.target.msg
 
+import android.util.Log
+import com.seiko.serial.target.SerialTarget
+
 internal object SerialMsgPool {
 
     //缓存池大小
@@ -7,7 +10,7 @@ internal object SerialMsgPool {
 
     var next: SerialMsg? = null
 
-    var poolSize = 0
+    private var poolSize = 0
 
     fun recycle(msg: SerialMsg) {
         synchronized(this) {
@@ -15,7 +18,9 @@ internal object SerialMsgPool {
             msg.next = next
             next = msg
             poolSize++
-//            Timber.d("回收， 缓存池=$poolSize")
+//            if (SerialTarget.IS_DEBUG) {
+//                Log.d("SerialMsgPool", "回收， 缓存池=$poolSize")
+//            }
         }
     }
 
@@ -25,11 +30,11 @@ internal object SerialMsgPool {
                 next = result.next
                 result.next = null
                 poolSize--
-//                Timber.d("缓存池取出，缓存池=$poolSize")
+//                Log.d("SerialMsgPool", "缓存池取出，缓存池=$poolSize")
                 return result
             }
         }
-//        Timber.d("创建新的对象，缓冲池 = $poolSize")
+//        Log.d("SerialMsgPool", "创建新的对象，缓冲池 = $poolSize")
         return SerialMsg()
     }
 

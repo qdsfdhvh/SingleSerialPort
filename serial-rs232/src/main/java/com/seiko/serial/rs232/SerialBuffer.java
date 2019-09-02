@@ -65,9 +65,9 @@ class SerialBuffer {
         }
 
         synchronized byte[] get() {
-            if (buffer.size() == 0) {
+            if(buffer.size() ==  0) {
                 try {
-                    SerialBuffer.this.wait();
+                    wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     Thread.currentThread().interrupt();

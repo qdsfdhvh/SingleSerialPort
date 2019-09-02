@@ -83,7 +83,7 @@ object Utils {
         // 地址长度
         val hex3 = (bytes.size / 2).toModBusByteArray()
         // 数据长度
-        val hex4 = (bytes.size).toModBusByteArray()
+        val hex4 = (bytes.size).toModBusByteArray(1)
         return (hex1 + hex2 + hex3 + hex4 + bytes).addCrc16()
     }
 

@@ -30,13 +30,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        SerialTarget.IS_DEBUG = true
+        openTarget()
+
     }
 
     /**
      * 打开Rs232串口
      */
     private fun openRs232Serial() {
-        serial = RS232SerialPort(SerialPortPath.ttyS3, 9600)
+        serial = RS232SerialPort(SerialPortPath.ttyS2, 115200)
         serial.open(object : SerialPort.Callback {
             override fun onSuccess() {
 
@@ -102,39 +105,46 @@ class MainActivity : AppCompatActivity() {
      * 对串口通讯的封装
      */
     private fun openTarget() {
+        serial = RS232SerialPort(SerialPortPath.ttyS2, 115200)
         target = serial.toTarget()
         target.start()
 
-        //一段地址连续读取，线圈用MBoxIntArray
-        BoxIntArray(address = 123, num = 2, len = 2, sep = 4).toObservable(target)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { intArray -> Log.d(TAG, Arrays.toString(intArray)) }
-            .addToDisposables()
+//        //一段地址连续读取，线圈用MBoxIntArray
+//        BoxIntArray(address = 1602, num = 6, len = 2, sep = 2)
+//            .toObservable(target, postTime = 500, debug = false)
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe { intArray -> Log.d(TAG, Arrays.toString(intArray)) }
+//            .addToDisposables()
+//
+//        // 单个地址连续读取，线圈用MBoxIntValue
+//        BoxIntValue(address = 1632, len = 2)
+//            .toObservable(target, postTime = 1000, debug = false)
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe { intValue -> Log.d(TAG, intValue.toString()) }
+//            .addToDisposables()
 
-        // 单个地址连续读取，线圈用MBoxIntValue
-        BoxIntValue(address = 123, len = 2)
-            .toObservable(target, postTime = 100)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { intValue -> Log.d(TAG, intValue.toString()) }
-            .addToDisposables()
-
-        // 一段地址单次读取
-        BoxIntArray(address = 132, num = 2, len = 2, sep = 4).toSingle(target)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { intArray -> Log.d(TAG, Arrays.toString(intArray)) }
-            .addToDisposables()
-
-        // 单个地址单次读取
-        BoxIntValue(address = 123, len = 2).toSingle(target)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { intValue -> Log.d(TAG, intValue.toString())  }
-            .addToDisposables()
+//        // 一段地址单次读取
+//        BoxIntArray(address = 132, num = 2, len = 2, sep = 4).toSingle(target)
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe { intArray -> Log.d(TAG, Arrays.toString(intArray)) }
+//            .addToDisposables()
+//
+//        // 单个地址单次读取
+//        BoxIntValue(address = 123, len = 2).toSingle(target)
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe { intValue -> Log.d(TAG, intValue.toString())  }
+//            .addToDisposables()
 
         // 写入地址
         val button = ButtonModule()
         target.addSerialModule(button)
-        button.pull(12343, true)
-        button.pull(12234, 233.toModBusByteArray(2))
+//        button.pull(12343, true)
+        //[1, 16, -93, -95, 0, 5, 10, 0, -56, 0, -56, 0, 100, 0, 120, 0, 0, -51, 56]
+        //[1, 16, -93, -95, 0, 5, 0, 10, 0, -56, 0, -56, 0, 100, 0, 120, 0, 0, -42, 41]
+        button.pull(byteArrayOf(1, 16, -93, -95, 0, 5, 10, 0, -56, 0, -56, 0, 100, 0, 120, 0, 0, -51, 56))
+//        button.pull(12234, 233.toModBusByteArray(2))
+        // 01 10 a3 a1 00 05 00 0a 00 c8 00 c8 00 64 00 78 00 00 d6 29
+        // 01 90 03 0c 01
     }
 
     override fun onDestroy() {

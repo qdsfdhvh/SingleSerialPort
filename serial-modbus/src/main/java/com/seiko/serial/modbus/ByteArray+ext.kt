@@ -5,12 +5,12 @@ package com.seiko.serial.modbus
  */
 fun ByteArray.toModBusInt(): Int {
     return when(size) {
-        4 -> ((this[2].toInt() and 0xFF shl 24)
-                or (this[3].toInt() and 0xFF shl 16)
-                or (this[0].toInt() and 0xFF shl 8)
-                or (this[1].toInt() and 0xFF))
-        2 -> ((this[0].toInt() and 0xFF shl 8)
-                or (this[1].toInt() and 0xFF))
+        4 -> ((this[2].toPositiveInt() shl 24)
+                or (this[3].toPositiveInt() shl 16)
+                or (this[0].toPositiveInt() shl 8)
+                or (this[1].toPositiveInt()))
+        2 -> ((this[0].toPositiveInt() shl 8)
+                or (this[1].toPositiveInt()))
         1 -> this[0].toInt()
         else -> 0
     }
@@ -20,12 +20,12 @@ fun ByteArray.toModBusInt(): Int {
  * 获得此数组的crc16数值
  * @return crc16数值
  */
-fun ByteArray.getCrc16Int(): Int {
+fun ByteArray.getCrc16Short(): Short {
     var crcReg = 0xFFFF
     for (d in this) {
         crcReg = (crcReg shr 8) xor (CRC16_TABLE[(crcReg xor d.toInt()) and 0xFF])
     }
-    return crcReg
+    return crcReg.toShort()
 }
 
 /**
@@ -33,7 +33,7 @@ fun ByteArray.getCrc16Int(): Int {
  * @return crc16数组
  */
 fun ByteArray.getCrc16(): ByteArray {
-    val crcReg = getCrc16Int()
+    val crcReg = getCrc16Short()
     return byteArrayOf(
         (crcReg.toPositiveInt().toByte()),
         (crcReg.toPositiveInt() shr 8).toByte())

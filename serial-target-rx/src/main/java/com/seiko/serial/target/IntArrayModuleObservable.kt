@@ -22,11 +22,7 @@ class IntArrayModuleObservable(
 ): Observable<IntArray>() {
 
     override fun subscribeActual(observer: Observer<in IntArray>?) {
-        val ins = IntArrayModuleObserver(
-            observer,
-            target,
-            array
-        )
+        val ins = IntArrayModuleObserver(observer, target, array)
         observer?.onSubscribe(ins)
 
         val sch = scheduler

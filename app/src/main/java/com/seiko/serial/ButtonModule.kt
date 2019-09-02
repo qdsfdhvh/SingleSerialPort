@@ -50,6 +50,10 @@ class ButtonModule: SerialModule {
         vector.add(Single(address, bytes))
     }
 
+    fun pull(bytes: ByteArray) {
+        bytes.singlePost()
+    }
+
     override fun attach(target: SerialModule.Target?) {
         if (target != null) {
             this.target = target
@@ -179,8 +183,12 @@ class ButtonModule: SerialModule {
 
     private fun ByteArray?.singlePost() {
         if (this == null) return
-        target?.send(this@ButtonModule, this)
+        post()
         lastPostTime.set(System.currentTimeMillis())
+    }
+
+    private fun ByteArray.post() {
+        target?.send(this@ButtonModule, this)
     }
 
     override fun getPriority(): Int {

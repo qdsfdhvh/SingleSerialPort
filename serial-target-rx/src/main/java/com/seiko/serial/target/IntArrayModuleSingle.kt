@@ -49,8 +49,8 @@ class IntArrayModuleSingle(
 
         override fun run() {
             if (!isDisposed || get() != EmptyDisposable.INSTANCE) {
-//                    downstream?.onSuccess(array.getDecodeArray())
-                downstream?.onError(TimeoutException("SerialTarget Receive Time Out."))
+                    downstream?.onSuccess(array.getDecodeArray())
+//                downstream?.onError(TimeoutException("SerialTarget Receive Time Out."))
             }
         }
 

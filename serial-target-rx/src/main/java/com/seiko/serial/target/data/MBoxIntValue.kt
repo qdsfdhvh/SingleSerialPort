@@ -9,8 +9,6 @@ import com.seiko.serial.target.Utils
  * M地址的连续读取
  * PS: M地址不同于ModBus的地址，不存在一个数据分成多个字节。
  */
-private const val TAG = "MBoxIntValue"
-
 open class MBoxIntValue(address: Int, len: Int = 1) : BoxIntValue(BoxIntParam(address, 1, len)) {
 
     override fun filter(bytes: ByteArray): Boolean {
@@ -37,6 +35,10 @@ open class MBoxIntValue(address: Int, len: Int = 1) : BoxIntValue(BoxIntParam(ad
 
     override fun bindPostCode(): ByteArray {
         return Utils.bind01Cmd(deviceId, data.address, 1)
+    }
+
+    companion object {
+        private const val TAG = "MBoxIntValue"
     }
 
 }

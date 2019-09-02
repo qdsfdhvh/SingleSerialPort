@@ -16,8 +16,6 @@ import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.collections.ArrayList
 
-private const val TAG = "SerialTarget"
-
 class SerialTarget(private val serial: SerialPort): SerialModule.Target, SerialMsgPostThread.Callback {
 
     /**
@@ -45,7 +43,7 @@ class SerialTarget(private val serial: SerialPort): SerialModule.Target, SerialM
      * 安全锁
      */
     private val lastReceiveTime = AtomicLong(System.currentTimeMillis())
-    private val sendThread = SerialMsgPostThread()
+    private var sendThread: SerialMsgPostThread? = null
 
     /*******************************************
      *                   Fun                   *
@@ -55,6 +53,9 @@ class SerialTarget(private val serial: SerialPort): SerialModule.Target, SerialM
      * 启动串口
      */
     override fun start() {
+        if (isOpen.get()) return
+
+        var result: ByteArray
         serial.open(object : SerialPort.Callback {
             override fun onSuccess() {
                 isOpen.set(true)
@@ -68,14 +69,19 @@ class SerialTarget(private val serial: SerialPort): SerialModule.Target, SerialM
             }
 
             override fun onResult(bytes: ByteArray) {
-                var bak = iDecode.check(bytes)
-                while (bak.isNotEmpty()) {
-                    if (iFilter.isSafe(bak)) {
-                        decodeBytes(bak)
+                if (IS_DEBUG) {
+                    Log.d(TAG, "RAW：${bytes.toHexString()}")
+                }
+
+                result = iDecode.check(bytes)
+
+                while (result.isNotEmpty()) {
+                    if (iFilter.isSafe(result)) {
+                        decodeBytes(result)
                     } else if (IS_DEBUG) {
-                        Log.d(TAG, "过滤异常字节：${bytes.contentToString()}")
+                        Log.d(TAG, "过滤异常字节：${bytes.toHexString()}")
                     }
-                    bak = iDecode.check(bytes)
+                    result = iDecode.check(ByteArray(0))
                 }
             }
         })
@@ -85,6 +91,8 @@ class SerialTarget(private val serial: SerialPort): SerialModule.Target, SerialM
      * 关闭串口
      */
     override fun close() {
+        if (!isOpen.get()) return
+
         // 删除目前存在的devices
         for (module in ArrayList(modules)) {
             delSerialModule(module)
@@ -97,7 +105,7 @@ class SerialTarget(private val serial: SerialPort): SerialModule.Target, SerialM
      * 发送指令
      */
     override fun send(device: SerialModule, bytes: ByteArray) {
-        sendThread.offer(SerialMsg.obtain(device, bytes))
+        sendThread?.offer(SerialMsg.obtain(device, bytes))
     }
 
     /**
@@ -142,16 +150,22 @@ class SerialTarget(private val serial: SerialPort): SerialModule.Target, SerialM
     private fun startPostQueue() {
         stopPostQueue()
 
-        sendThread.setCallback(this)
-        sendThread.start()
+        val bak = SerialMsgPostThread()
+        bak.setCallback(this)
+        bak.start()
+        sendThread = bak
     }
 
     /**
      * 关闭发送队列
      */
     private fun stopPostQueue() {
-        sendThread.setCallback(null)
-        sendThread.stopThread()
+        val bak = sendThread
+        if (bak != null) {
+            bak.setCallback(null)
+            bak.stopThread()
+            sendThread = null
+        }
     }
 
     /*******************************************
@@ -188,21 +202,20 @@ class SerialTarget(private val serial: SerialPort): SerialModule.Target, SerialM
 
         if (System.currentTimeMillis().minus(lastReceiveTime.get()) > MAX_CONNECT_TIME) {
             if (IS_DEBUG) {
-                Log.d(TAG, "尝试清空队列：${sendThread.size()}")
+                Log.d(TAG, "尝试清空队列：${sendThread?.size()}")
             }
-            sendThread.clearQueue()
+            sendThread?.clearQueue()
         }
     }
 
     private fun decodeBytes(bytes: ByteArray) {
         currentModule.get()?.let { module ->
             if (module.accept(bytes)) {
-                sendThread.setIsWaitReceive(false)
+                sendThread?.setIsWaitReceive(false)
             }
 
             if (IS_DEBUG) {
-                val msg = "%s -> READ：%s".format(module.getTag(), bytes.toHexString())
-                Log.v(TAG, msg)
+                Log.v(TAG,  "%s -> READ：%s".format(module.getTag(), bytes.toHexString()))
             }
         }
 
@@ -218,5 +231,7 @@ class SerialTarget(private val serial: SerialPort): SerialModule.Target, SerialM
          * 是否调试
          */
         var IS_DEBUG = false
+
+        private const val TAG = "SerialTarget"
     }
 }

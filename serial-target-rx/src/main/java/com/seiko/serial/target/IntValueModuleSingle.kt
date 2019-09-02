@@ -50,8 +50,8 @@ class IntValueModuleSingle(
 
         override fun run() {
             if (!isDisposed || get() != EmptyDisposable.INSTANCE) {
-//                    downstream?.onSuccess(array.getDecodeValue())
-                downstream?.onError(TimeoutException("SerialTarget Receive Time Out."))
+                    downstream?.onSuccess(array.getDecodeValue())
+//                downstream?.onError(TimeoutException("SerialTarget Receive Time Out."))
             }
         }
 

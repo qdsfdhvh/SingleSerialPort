@@ -1,5 +1,7 @@
 package com.seiko.serial.modbus
 
+import kotlin.experimental.and
+
 internal val HEX_DIGIT_CHARS =
     charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f')
 
@@ -27,7 +29,11 @@ internal val CRC16_TABLE = arrayListOf(
     0x4400, 0x84C1, 0x8581, 0x4540, 0x8701, 0x47C0, 0x4680, 0x8641, 0x8201, 0x42C0, 0x4380, 0x8341,
     0x4100, 0x81C1, 0x8081, 0x4040)
 
-internal fun Int.toPositiveInt(): Int = this and 0xFFFF
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun Byte.toPositiveInt(): Int = toInt() and 0xFF
+
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun Short.toPositiveInt(): Int = toInt() and 0xFFFF
 
 //internal fun charToByte(c: Char): Int {
 //    return "0123456789ABCDEF".indexOf(c)

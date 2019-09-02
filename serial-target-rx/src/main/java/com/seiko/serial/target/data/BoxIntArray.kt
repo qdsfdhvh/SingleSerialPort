@@ -8,8 +8,6 @@ import com.seiko.serial.target.Utils
 /**
  * ModBus地址连续读取
  */
-private const val TAG = "BoxIntArray"
-
 open class BoxIntArray(protected val data: BoxIntParam) {
 
     constructor(address: Int, num: Int, len: Int = 2, sep: Int = len): this(BoxIntParam(address, num, len, sep))
@@ -120,4 +118,7 @@ open class BoxIntArray(protected val data: BoxIntParam) {
     var debug = false            // 是否调试
     var priority = 99            // 优先级
 
+    companion object {
+        private const val TAG = "BoxIntArray"
+    }
 }

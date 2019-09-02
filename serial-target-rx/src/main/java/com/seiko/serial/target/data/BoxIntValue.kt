@@ -8,8 +8,6 @@ import com.seiko.serial.target.Utils
 /**
  * ModBus单个地址读取
  */
-private const val TAG = "BoxIntValue"
-
 open class BoxIntValue(protected val data: BoxIntParam) {
 
     constructor(address: Int, len: Int = 1): this(BoxIntParam(address, 1, len, len))
@@ -102,4 +100,7 @@ open class BoxIntValue(protected val data: BoxIntParam) {
     var debug = false            // 是否调试
     var priority = 99            // 优先级
 
+    companion object {
+        private const val TAG = "BoxIntValue"
+    }
 }

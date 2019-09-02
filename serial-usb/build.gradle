@@ -17,7 +17,7 @@ android {
 }
 
 dependencies {
-    api 'com.github.felHR85:UsbSerial:6.0.1'
+    api 'com.github.felHR85:UsbSerial:6.1.0'
     api project(':serial-core')
     implementation deps.kotlin.stdlib
 }

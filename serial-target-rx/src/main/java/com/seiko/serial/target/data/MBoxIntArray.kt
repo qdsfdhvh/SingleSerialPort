@@ -8,8 +8,6 @@ import kotlin.math.min
 /**
  * M地址的连续读取
  */
-private const val TAG = "MBoxIntArray"
-
 open class MBoxIntArray(data: BoxIntParam): BoxIntArray(data) {
 
     constructor(address: Int, num: Int, len: Int = 2, sep: Int = len):
@@ -68,5 +66,9 @@ open class MBoxIntArray(data: BoxIntParam): BoxIntArray(data) {
 
     private fun Int.toBinary(): String {
         return Integer.toBinaryString((this and 0xFF) + 0x100).substring(1)
+    }
+
+    companion object {
+        private const val TAG = "MBoxIntArray"
     }
 }

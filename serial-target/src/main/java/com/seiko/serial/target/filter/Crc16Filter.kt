@@ -17,3 +17,8 @@ class Crc16Filter: IFilter {
     }
 
 }
+
+fun main() {
+    val bytes = byteArrayOf(1, 16, -93, -95, 0, 5)
+    println(bytes.getCrc16().contentToString())
+}
