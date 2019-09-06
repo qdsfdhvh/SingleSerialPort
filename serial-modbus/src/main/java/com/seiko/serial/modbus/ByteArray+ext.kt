@@ -50,24 +50,36 @@ fun ByteArray.addCrc16(): ByteArray {
 /**
  * 将此数组转为Hex
  * @param sep 间隔符
+ * @param toLowerCase 是否小写
  * @return Hex
  */
-fun ByteArray.toHexString(sep: Char = ' '): String {
+fun ByteArray.toHexString(sep: Char = ' ', toLowerCase: Boolean = true): String {
+    return encodeHex(this, sep, if (toLowerCase) HEX_DIGIT_LOWER_CHARS else HEX_DIGIT_UPPER_CHARS)
+}
+
+/**
+ * 将数组转为Hex
+ * @param bytes 需要转换的字节
+ * @param sep 分隔符
+ * @param toDigits HEX字典
+ * @return HEX
+ */
+private fun encodeHex(bytes: ByteArray, sep: Char, toDigits: CharArray): String {
     val result: CharArray
     if (sep == '\u0000') { //空字符
-        result = CharArray(size * 2)
+        result = CharArray(bytes.size * 2)
         var c = 0
-        for (b in this) {
-            result[c++] = HEX_DIGIT_CHARS[b shr 4 and 0xf]
-            result[c++] = HEX_DIGIT_CHARS[b       and 0xf]
+        for (b in bytes) {
+            result[c++] = toDigits[b shr 4 and 0xf]
+            result[c++] = toDigits[b       and 0xf]
         }
     } else {
-        val resultSize = size * 3 - 1
+        val resultSize = bytes.size * 3 - 1
         result = CharArray( resultSize)
         var c = 0
-        for (b in this) {
-            result[c++] = HEX_DIGIT_CHARS[b shr 4 and 0xf]
-            result[c++] = HEX_DIGIT_CHARS[b       and 0xf]
+        for (b in bytes) {
+            result[c++] = toDigits[b shr 4 and 0xf]
+            result[c++] = toDigits[b       and 0xf]
             if (c == resultSize) {
                 break
             } else {

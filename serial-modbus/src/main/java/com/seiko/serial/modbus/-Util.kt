@@ -1,7 +1,10 @@
 package com.seiko.serial.modbus
 
-internal val HEX_DIGIT_CHARS =
+internal val HEX_DIGIT_LOWER_CHARS =
     charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f')
+
+internal val HEX_DIGIT_UPPER_CHARS =
+    charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F')
 
 internal val CRC16_TABLE = arrayListOf(
     0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241, 0xC601, 0x06C0, 0x0780, 0xC741,
