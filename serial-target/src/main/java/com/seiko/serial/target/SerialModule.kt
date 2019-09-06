@@ -28,11 +28,6 @@ interface SerialModule {
     interface Target {
 
         /**
-         * 发送指令
-         */
-        fun send(device: SerialModule, bytes: ByteArray)
-
-        /**
          * 开始
          */
         fun start()
@@ -41,6 +36,11 @@ interface SerialModule {
          * 停止
          */
         fun close()
+
+        /**
+         * 发送指令
+         */
+        fun send(device: SerialModule, bytes: ByteArray)
 
         /**
          * 添加Module

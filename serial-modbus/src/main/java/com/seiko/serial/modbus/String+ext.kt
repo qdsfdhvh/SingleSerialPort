@@ -1,21 +1,5 @@
 package com.seiko.serial.modbus
 
-import java.util.*
-
-//fun String.toModBusByteArray(sep: Char = ' '): ByteArray {
-//    if (this == "") return ByteArray(0)
-//
-//    val hexString = this.replace(sep.toString(), "").toUpperCase(Locale.US)
-//    val length = hexString.length / 2
-//    val hexChars = hexString.toCharArray()
-//    val d = ByteArray(length)
-//    for (i in 0 until length) {
-//        val pos = i * 2
-//        d[i] = (charToByte(hexChars[pos]) shl 4 or charToByte(hexChars[pos + 1])).toByte()
-//    }
-//    return d
-//}
-
 fun String.toModBusByteArray(sep: Char = ' '): ByteArray {
     if (this == "") return ByteArray(0)
 
@@ -38,4 +22,9 @@ fun String.getCrc16(sep: Char = ' '): String {
 fun String.addCrc16(sep: Char = ' '): String {
     val bytes = toModBusByteArray(sep).addCrc16()
     return bytes.toHexString(sep)
+}
+
+fun main() {
+    val bytes = byteArrayOf(1, 23, 45, -12, -45)
+    println(bytes.toHexString('\u0000'))
 }

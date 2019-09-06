@@ -116,7 +116,7 @@ class RS232SerialPort(private val path: String,
                     // 暂停一点时间，免得一直循环造成CPU占用率过高
                     SystemClock.sleep(1)
                 }
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
 
@@ -125,7 +125,7 @@ class RS232SerialPort(private val path: String,
         override fun stopThread() {
             try {
                 source.close()
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
                 super.stopThread()

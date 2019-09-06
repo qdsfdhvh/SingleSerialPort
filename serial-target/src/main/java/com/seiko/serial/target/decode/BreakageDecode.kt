@@ -2,6 +2,7 @@ package com.seiko.serial.target.decode
 
 import com.seiko.serial.modbus.indexOfArray
 import com.seiko.serial.modbus.toModBusInt
+import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -16,7 +17,7 @@ class BreakageDecode : IDecode {
     private val currentSize = AtomicInteger()
     //    private val queueRemain = LinkedList<Byte>()
 //    private var queueRemain = EMPTY_BYTES
-    private var queueRemain: ByteBuffer = ByteBuffer.allocate(4086)
+    private var queueRemain: ByteBuffer = ByteBuffer.allocate(8 * 4086)
 
     private val lastPostBytes = AtomicReference<ByteArray>()
 
@@ -130,27 +131,27 @@ class BreakageDecode : IDecode {
 
 }
 
-fun Collection<Int>.toModBusBytes(byteSize: Int = 2): ByteArray {
-    val bytes = ByteArray(this.size * byteSize)
-    forEachIndexed { index, weight ->
-        when(byteSize) {
-            2 -> {
-                bytes[index * 2 + 0] = (weight shr 8 and 0xFF).toByte()
-                bytes[index * 2 + 1] = (weight and 0xFF).toByte()
-            }
-            4 -> {
-                bytes[index * 4 + 2] = (weight shr 24 and 0xFF).toByte()
-                bytes[index * 4 + 3] = (weight shr 16 and 0xFF).toByte()
-                bytes[index * 4 + 0] = (weight shr 8 and 0xFF).toByte()
-                bytes[index * 4 + 1] = (weight and 0xFF).toByte()
-            }
-            else -> {
-                bytes[index * 1 + 0] = (weight and 0xFF).toByte()
-            }
-        }
-    }
-    return bytes
-}
+//fun Collection<Int>.toModBusBytes(byteSize: Int = 2): ByteArray {
+//    val bytes = ByteArray(this.size * byteSize)
+//    forEachIndexed { index, weight ->
+//        when(byteSize) {
+//            2 -> {
+//                bytes[index * 2 + 0] = (weight shr 8 and 0xFF).toByte()
+//                bytes[index * 2 + 1] = (weight and 0xFF).toByte()
+//            }
+//            4 -> {
+//                bytes[index * 4 + 2] = (weight shr 24 and 0xFF).toByte()
+//                bytes[index * 4 + 3] = (weight shr 16 and 0xFF).toByte()
+//                bytes[index * 4 + 0] = (weight shr 8 and 0xFF).toByte()
+//                bytes[index * 4 + 1] = (weight and 0xFF).toByte()
+//            }
+//            else -> {
+//                bytes[index * 1 + 0] = (weight and 0xFF).toByte()
+//            }
+//        }
+//    }
+//    return bytes
+//}
 
 private val EMPTY_BYTES = ByteArray(0)
 

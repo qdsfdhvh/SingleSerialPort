@@ -53,16 +53,26 @@ fun ByteArray.addCrc16(): ByteArray {
  * @return Hex
  */
 fun ByteArray.toHexString(sep: Char = ' '): String {
-    val resultSize = size * 3 - 1
-    val result = CharArray(resultSize)
-    var c = 0
-    for (b in this) {
-        result[c++] = HEX_DIGIT_CHARS[b shr 4 and 0xf]
-        result[c++] = HEX_DIGIT_CHARS[b       and 0xf]
-        if (c == resultSize) {
-            break
-        } else {
-            result[c++] = sep
+    val result: CharArray
+    if (sep == '\u0000') { //空字符
+        result = CharArray(size * 2)
+        var c = 0
+        for (b in this) {
+            result[c++] = HEX_DIGIT_CHARS[b shr 4 and 0xf]
+            result[c++] = HEX_DIGIT_CHARS[b       and 0xf]
+        }
+    } else {
+        val resultSize = size * 3 - 1
+        result = CharArray( resultSize)
+        var c = 0
+        for (b in this) {
+            result[c++] = HEX_DIGIT_CHARS[b shr 4 and 0xf]
+            result[c++] = HEX_DIGIT_CHARS[b       and 0xf]
+            if (c == resultSize) {
+                break
+            } else {
+                result[c++] = sep
+            }
         }
     }
     return String(result)
