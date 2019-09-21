@@ -1,55 +1,46 @@
-package com.seiko.serial.rs232;
+package com.seiko.serial.thread;
 
 import java.io.EOFException;
 
 import okio.Buffer;
 
-class SerialBuffer {
-    static final long DEFAULT_READ_BUFFER_SIZE = 16 * 1024;
+public class SerialBuffer {
+    public static final long DEFAULT_READ_BUFFER_SIZE = 16 * 1024;
     private static final int MAX_BULK_BUFFER = 16 * 1024;
 
     private Buffer readBuffer;
     private final SynchronizedBuffer writeBuffer;
-//    private byte[] readBufferCompatible; // Read buffer for android < 4.2
 
-    SerialBuffer() {
+    public SerialBuffer() {
         writeBuffer = new SynchronizedBuffer();
         readBuffer = new Buffer();
     }
 
-    Buffer getReadBuffer() {
+    public Buffer getReadBuffer() {
         synchronized (this) {
             return readBuffer;
         }
     }
 
-    byte[] getDataReceived() {
+    public byte[] getDataReceived() {
         synchronized (this) {
             return readBuffer.readByteArray();
         }
     }
 
-    void clearReadBuffer() {
+    public void clearReadBuffer() {
         synchronized (this) {
             readBuffer.clear();
         }
     }
 
-    byte[] getWriteBuffer() {
+    public byte[] getWriteBuffer() {
         return writeBuffer.get();
     }
 
-    void putWriteBuffer(byte[] data) {
+    public void putWriteBuffer(byte[] data) {
         writeBuffer.put(data);
     }
-
-//    public byte[] getBufferCompatible() {
-//        return readBufferCompatible;
-//    }
-
-//    public byte[] getDataReceivedCompatible(int numberBytes) {
-//        return Arrays.copyOfRange(readBufferCompatible, 0, numberBytes);
-//    }
 
     private class SynchronizedBuffer {
         private final Buffer buffer;

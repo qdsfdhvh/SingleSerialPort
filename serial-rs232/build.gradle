@@ -13,10 +13,10 @@ android {
             cmake {
                 cppFlags ""
             }
-            ndk {
-//                abiFilters "armeabi", "armeabi-v7a"
-                abiFilters "armeabi-v7a"
-            }
+//            ndk {
+////                abiFilters "armeabi", "armeabi-v7a"
+//                abiFilters "armeabi-v7a"
+//            }
         }
     }
     compileOptions {
@@ -35,8 +35,8 @@ android {
 
 dependencies {
     api project(':serial-core')
+    api project(':serial-thread')
     implementation deps.kotlin.stdlib
-    api 'com.squareup.okio:okio:2.2.2'
 }
 
 apply from: rootProject.file('gradle/bintray.gradle')

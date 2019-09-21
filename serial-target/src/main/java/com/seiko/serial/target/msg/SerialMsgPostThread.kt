@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
 import com.seiko.serial.target.MAX_WAIT_RECEIVE_TIME
+import com.seiko.serial.thread.AbsWorkerThread
 
 internal class SerialMsgPostThread : AbsWorkerThread() {
 

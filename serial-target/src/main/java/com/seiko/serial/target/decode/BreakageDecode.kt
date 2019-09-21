@@ -131,28 +131,6 @@ class BreakageDecode : IDecode {
 
 }
 
-//fun Collection<Int>.toModBusBytes(byteSize: Int = 2): ByteArray {
-//    val bytes = ByteArray(this.size * byteSize)
-//    forEachIndexed { index, weight ->
-//        when(byteSize) {
-//            2 -> {
-//                bytes[index * 2 + 0] = (weight shr 8 and 0xFF).toByte()
-//                bytes[index * 2 + 1] = (weight and 0xFF).toByte()
-//            }
-//            4 -> {
-//                bytes[index * 4 + 2] = (weight shr 24 and 0xFF).toByte()
-//                bytes[index * 4 + 3] = (weight shr 16 and 0xFF).toByte()
-//                bytes[index * 4 + 0] = (weight shr 8 and 0xFF).toByte()
-//                bytes[index * 4 + 1] = (weight and 0xFF).toByte()
-//            }
-//            else -> {
-//                bytes[index * 1 + 0] = (weight and 0xFF).toByte()
-//            }
-//        }
-//    }
-//    return bytes
-//}
-
 private val EMPTY_BYTES = ByteArray(0)
 
 private fun ByteBuffer.getDataReceived(): ByteArray {

@@ -54,16 +54,15 @@ class SerialTarget(private val serial: SerialPort): SerialModule.Target, SerialM
      */
     override fun start() {
         if (isOpen.get()) return
+        isOpen.lazySet(true)
 
         var result: ByteArray
         serial.open(object : SerialPort.Callback {
             override fun onSuccess() {
-                isOpen.set(true)
                 onStart()
             }
 
             override fun onError(e: Throwable) {
-                isOpen.set(false)
                 onPause()
                 Log.e(TAG, "WARN.", e)
             }
@@ -92,12 +91,12 @@ class SerialTarget(private val serial: SerialPort): SerialModule.Target, SerialM
      */
     override fun close() {
         if (!isOpen.get()) return
+        isOpen.lazySet(false)
 
         // 删除目前存在的devices
         for (module in ArrayList(modules)) {
             delSerialModule(module)
         }
-        isOpen.set(false)
         serial.close()
     }
 

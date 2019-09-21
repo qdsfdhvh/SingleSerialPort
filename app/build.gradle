@@ -33,6 +33,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':serial-rs232')
     implementation project(':serial-usb')
+    implementation project(':serial-tcp')
     implementation project(':serial-target-rx')
 
 //    implementation 'com.seiko.serial:serial-rs232:0.0.5'

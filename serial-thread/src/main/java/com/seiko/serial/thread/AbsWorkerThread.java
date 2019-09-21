@@ -1,9 +1,9 @@
-package com.seiko.serial.rs232;
+package com.seiko.serial.thread;
 
 /**
  * github [https://github.com/felHR85/UsbSerial/blob/master/usbserial/src/main/java/com/felhr/usbserial/AbstractWorkerThread.java]
  */
-abstract class AbsWorkerThread extends Thread {
+public abstract class AbsWorkerThread extends Thread {
 //    boolean firstTime = true;
     private volatile boolean keep = true;
     private volatile Thread workingThread;
@@ -25,5 +25,5 @@ abstract class AbsWorkerThread extends Thread {
         }
     }
 
-    abstract void doRun();
+    public abstract void doRun();
 }

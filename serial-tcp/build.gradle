@@ -18,9 +18,6 @@ android {
 
 dependencies {
     api project(':serial-core')
-    api project(':serial-modbus')
     api project(':serial-thread')
     implementation deps.kotlin.stdlib
 }
-
-apply from: rootProject.file('gradle/bintray.gradle')

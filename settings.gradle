@@ -1,4 +1,4 @@
-include ':app', ':serial-target-rx',
+include ':app', ':serial-target-rx', ':serial-tcp', ':serial-thread',
         ':serial-core',
         ':serial-modbus',
         ':serial-rs232',

@@ -3,6 +3,7 @@ apply plugin: 'java-library'
 
 dependencies {
     implementation deps.kotlin.stdlib
+    api 'com.squareup.okio:okio:2.2.2'
 }
 
 sourceCompatibility = buildVersions.sourceCompat
