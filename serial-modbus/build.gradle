@@ -1,11 +1,23 @@
-apply plugin: 'kotlin'
-apply plugin: 'java-library'
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion buildVersions.targetSdk
+    defaultConfig {
+        minSdkVersion buildVersions.minSdk
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    compileOptions {
+        sourceCompatibility buildVersions.sourceCompat
+        targetCompatibility buildVersions.targetCompat
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
 
 dependencies {
     implementation deps.kotlin.stdlib
 }
-
-sourceCompatibility = buildVersions.sourceCompat
-targetCompatibility = buildVersions.targetCompat
 
 apply from: rootProject.file('gradle/bintray.gradle')

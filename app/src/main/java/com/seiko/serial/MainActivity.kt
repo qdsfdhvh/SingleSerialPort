@@ -13,6 +13,7 @@ import com.seiko.serial.target.data.BoxIntValue
 import com.seiko.serial.target.toObservable
 import com.seiko.serial.target.toSingle
 import com.seiko.serial.target.toTarget
+import com.seiko.serial.tcp.TcpSerialPort
 import com.seiko.serial.usb.UsbSerialPort
 import com.seiko.serial.usb.UsbSerialService
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -85,6 +86,27 @@ class MainActivity : AppCompatActivity() {
      */
     private fun openUsbSerial() {
         serial = UsbSerialPort(9600, vid = 1000, pid = 2000)
+        serial.open(object : SerialPort.Callback {
+            override fun onSuccess() {
+
+            }
+
+            override fun onResult(bytes: ByteArray) {
+                // in work thread
+            }
+
+            override fun onError(e: Throwable) {
+
+            }
+        })
+        serial.send(byteArrayOf(1, 2, 3))
+    }
+
+    /**
+     * 打开Rs232串口
+     */
+    private fun openTcpSerial() {
+        serial = TcpSerialPort("192.168.1.1", 8080)
         serial.open(object : SerialPort.Callback {
             override fun onSuccess() {
 

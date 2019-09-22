@@ -10,6 +10,8 @@
 implementation 'com.seiko.serial:serial-rs232:x.y.z'
 // 使用USB串口
 implementation 'com.seiko.serial:serial-usb:x.y.z'
+// 使用Tcp
+implementation 'com.seiko.serial:serial-tcp:x.y.z'
 // 串口使用Rx封装
 implementation 'com.seiko.serial:serial-target-rx:x.y.z'
 // 字节处理
@@ -61,6 +63,24 @@ serial.close()
 
 /** USB串口2：开启指定USB设备 **/
 serial = UsbSerialPort(9600, vid = 1000, pid = 2000)
+serial.open(object : SerialPort.Callback {
+    override fun onSuccess() {
+
+    }
+
+    override fun onResult(bytes: ByteArray) {
+        // in work thread
+    }
+
+    override fun onError(e: Throwable) {
+
+    }
+})
+serial.send(byteArrayOf(1, 2, 3))
+serial.close()
+
+/** RS232串口 **/
+serial = TcpSerialPort("192.168.1.1", 8080)
 serial.open(object : SerialPort.Callback {
     override fun onSuccess() {
 

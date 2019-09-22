@@ -21,3 +21,5 @@ dependencies {
     api project(':serial-thread')
     implementation deps.kotlin.stdlib
 }
+
+apply from: rootProject.file('gradle/bintray.gradle')
