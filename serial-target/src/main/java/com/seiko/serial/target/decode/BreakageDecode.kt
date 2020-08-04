@@ -15,21 +15,11 @@ class BreakageDecode : IDecode {
 
     private val currentHead = AtomicReference<ByteArray>()
     private val currentSize = AtomicInteger()
-    //    private val queueRemain = LinkedList<Byte>()
-//    private var queueRemain = EMPTY_BYTES
     private var queueRemain: ByteBuffer = ByteBuffer.allocate(8 * 4086)
 
     private val lastPostBytes = AtomicReference<ByteArray>()
 
     override fun check(bytes: ByteArray): ByteArray {
-//        var bak = bytes
-//        if (queueRemain.isNotEmpty()) {
-//            if (queueRemain.size < 1024 * 10) {
-//                bak = queueRemain + bytes
-//            }
-//            queueRemain = EMPTY_BYTES
-//        }
-
         queueRemain.put(bytes)
         val size = queueRemain.position()
         val newBytes = if (size > 0) {
@@ -49,16 +39,12 @@ class BreakageDecode : IDecode {
         // 如果在现有缓存池中没有找到头字节，全部废弃。
         val index = bytes.indexOfArray(head)
         if (index == -1) {
-//            queueRemain.offer(bytes)
-//            queueRemain += bytes
             queueRemain.put(bytes)
             return EMPTY_BYTES
         }
 
         // 当前缓存池只有一个头，返回null等下次操作。
         if (index + head.size >= bytes.size) {
-//            queueRemain.offer(bytes)
-//            queueRemain += bytes
             queueRemain.put(bytes)
             return EMPTY_BYTES
         }
@@ -70,16 +56,12 @@ class BreakageDecode : IDecode {
         // IF 数据不够长，放回缓存池, 返回null等下次处理。
         if (index + len > bytes.size) {
 //            Log.d("RxDecode", "长度${index + len} > ${bytes.size}, 存入缓存池等下次操作。");
-//            queueRemain.offer(bytes)
-//            queueRemain += bytes
             queueRemain.put(bytes)
             return EMPTY_BYTES
         }
         // IF 数据过多，将多余的数据放入缓存池。
         else if (index + len < bytes.size) {
 //            Log.d("RxDecode", "长度${index + len} < ${bytes.size}, 过于数据存入缓存池。");
-//            queueRemain.offer(bytes.copyOfRange(index + len , bytes.size))
-//            queueRemain += bytes.copyOfRange(index + len , bytes.size)
             queueRemain.put(bytes.copyOfRange(index + len , bytes.size))
         }
 
@@ -126,7 +108,6 @@ class BreakageDecode : IDecode {
 
     private fun setHead(bytes: ByteArray) {
         currentHead.lazySet(bytes)
-//        Log.d(TAG, "替换字节头：${Arrays.toString(bytes)}")
     }
 
 }

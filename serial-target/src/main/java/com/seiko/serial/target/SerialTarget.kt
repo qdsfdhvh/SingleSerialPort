@@ -50,6 +50,13 @@ class SerialTarget(private val serial: SerialPort): SerialModule.Target, SerialM
      *******************************************/
 
     /**
+     * 设备是否开启
+     */
+    fun isOpen(): Boolean {
+        return isOpen.get()
+    }
+
+    /**
      * 启动串口
      */
     override fun start() {

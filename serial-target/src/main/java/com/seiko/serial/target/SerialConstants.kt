@@ -1,10 +1,5 @@
 package com.seiko.serial.target
 
-///**
-// * 默认底层指令队列发送间隔，因为PLC有3ms的发送延时，所以设为4ms。
-// */
-//internal const val DEFAULT_POST_TIME = 4L
-
 /**
  * 最多等待*ms
  */
