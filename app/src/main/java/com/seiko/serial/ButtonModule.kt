@@ -3,8 +3,8 @@ package com.seiko.serial
 import android.util.Log
 import com.seiko.serial.target.SerialModule
 import com.seiko.serial.target.Utils
-import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean

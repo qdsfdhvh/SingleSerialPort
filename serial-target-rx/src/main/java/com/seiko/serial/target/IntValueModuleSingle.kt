@@ -1,12 +1,12 @@
 package com.seiko.serial.target
 
 import com.seiko.serial.target.data.BoxIntValue
-import io.reactivex.Scheduler
-import io.reactivex.Single
-import io.reactivex.SingleObserver
-import io.reactivex.disposables.Disposable
-import io.reactivex.internal.disposables.DisposableHelper
-import io.reactivex.internal.disposables.EmptyDisposable
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleObserver
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.internal.disposables.DisposableHelper
+import io.reactivex.rxjava3.internal.disposables.EmptyDisposable
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicReference

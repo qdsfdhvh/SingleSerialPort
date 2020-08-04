@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.seiko.serial.core.SerialPort
-import com.seiko.serial.modbus.toModBusByteArray
 import com.seiko.serial.rs232.RS232SerialPort
 import com.seiko.serial.rs232.SerialPortPath
 import com.seiko.serial.target.SerialTarget
@@ -16,9 +15,9 @@ import com.seiko.serial.target.toTarget
 import com.seiko.serial.tcp.TcpSerialPort
 import com.seiko.serial.usb.UsbSerialPort
 import com.seiko.serial.usb.UsbSerialService
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -131,31 +130,31 @@ class MainActivity : AppCompatActivity() {
         target = serial.toTarget()
         target.start()
 
-//        //一段地址连续读取，线圈用MBoxIntArray
-//        BoxIntArray(address = 1602, num = 6, len = 2, sep = 2)
-//            .toObservable(target, postTime = 500, debug = false)
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe { intArray -> Log.d(TAG, Arrays.toString(intArray)) }
-//            .addToDisposables()
-//
-//        // 单个地址连续读取，线圈用MBoxIntValue
-//        BoxIntValue(address = 1632, len = 2)
-//            .toObservable(target, postTime = 1000, debug = false)
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe { intValue -> Log.d(TAG, intValue.toString()) }
-//            .addToDisposables()
+        //一段地址连续读取，线圈用MBoxIntArray
+        BoxIntArray(address = 1602, num = 6, len = 2, sep = 2)
+            .toObservable(target, postTime = 500, debug = false)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { intArray -> Log.d(TAG, Arrays.toString(intArray)) }
+            .addToDisposables()
 
-//        // 一段地址单次读取
-//        BoxIntArray(address = 132, num = 2, len = 2, sep = 4).toSingle(target)
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe { intArray -> Log.d(TAG, Arrays.toString(intArray)) }
-//            .addToDisposables()
-//
-//        // 单个地址单次读取
-//        BoxIntValue(address = 123, len = 2).toSingle(target)
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe { intValue -> Log.d(TAG, intValue.toString())  }
-//            .addToDisposables()
+        // 单个地址连续读取，线圈用MBoxIntValue
+        BoxIntValue(address = 1632, len = 2)
+            .toObservable(target, postTime = 1000, debug = false)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { intValue -> Log.d(TAG, intValue.toString()) }
+            .addToDisposables()
+
+        // 一段地址单次读取
+        BoxIntArray(address = 132, num = 2, len = 2, sep = 4).toSingle(target)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { intArray -> Log.d(TAG, Arrays.toString(intArray)) }
+            .addToDisposables()
+
+        // 单个地址单次读取
+        BoxIntValue(address = 123, len = 2).toSingle(target)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { intValue -> Log.d(TAG, intValue.toString())  }
+            .addToDisposables()
 
         // 写入地址
         val button = ButtonModule()
