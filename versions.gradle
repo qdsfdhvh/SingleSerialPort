@@ -1,6 +1,6 @@
 def versions = [
         /* android */
-        'androidPlugin'    : '3.5.0',
+        'androidPlugin'    : '4.1.1',
         /* support */
         'support'          : '29.0.0',
         /* kotlin */
