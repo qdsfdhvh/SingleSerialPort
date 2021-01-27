@@ -1,4 +1,4 @@
-apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.aaron.gradle.bintray-release'
 
 publish {
     artifactId = POM_ARTIFACT_ID
